@@ -20,8 +20,8 @@ export async function createTrip(formData: FormData) {
     .insert({
       user_id: user.id,
       name,
-      start_date: startDate ?? undefined,
-      end_date: endDate ?? undefined,
+      start_date: startDate || undefined,
+      end_date: endDate || undefined,
       description,
       cover_photo_url: coverPhotoUrl,
       estimated_budget_inr: estimatedBudgetInr,
@@ -36,11 +36,12 @@ export async function createTrip(formData: FormData) {
   // If city_id was provided to add initial stop
   const initialCityId = emptyToNull(formData.get("initial_city_id"));
   if (initialCityId && data?.trip_id) {
+    const today = new Date().toISOString().split("T")[0];
     await supabase.from("trip_stops").insert({
       trip_id: data.trip_id,
       city_id: initialCityId,
-      start_date: startDate ?? new Date().toISOString().split("T")[0],
-      end_date: endDate ?? new Date().toISOString().split("T")[0],
+      start_date: startDate || today,
+      end_date: endDate || startDate || today,
       order_index: 0,
     });
   }
