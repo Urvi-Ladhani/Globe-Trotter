@@ -27,14 +27,14 @@ export default async function BuildPage({
     .eq("trip_id", tripId)
     .order("order_index", { ascending: true });
 
-  // Fetch all cities for the add-stop dropdown
+  // Fetch all cities for dropdown
   const { data: allCities } = await supabase
     .from("cities")
     .select("city_id, name, country, region")
     .order("name", { ascending: true });
   const cityById = new Map((allCities ?? []).map((c) => [c.city_id, c]));
 
-  // Fetch activities for all stop cities
+  // Fetch activities for stop cities
   const stopCityIds = (stops ?? []).map((s) => s.city_id);
   const { data: cityActivities } = stopCityIds.length
     ? await supabase
@@ -52,7 +52,7 @@ export default async function BuildPage({
 
   const activityById = new Map((cityActivities ?? []).map((a) => [a.activity_id, a]));
 
-  // Fetch trip activities for these stops
+  // Fetch trip activities for stops
   const stopIds = (stops ?? []).map((s) => s.stop_id);
   const { data: tripActivities } = stopIds.length
     ? await supabase
@@ -65,56 +65,67 @@ export default async function BuildPage({
   type TripActivityRow = NonNullable<typeof tripActivities>[number];
   const byStop: Record<string, TripActivityRow[]> = {};
   for (const ta of (tripActivities ?? []) as TripActivityRow[]) {
-    (byStop[ta.stop_id] ??= []).push(ta);
+    if (!byStop[ta.stop_id]) byStop[ta.stop_id] = [];
+    byStop[ta.stop_id].push(ta);
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#FDFBF7]">
       <Nav profile={profile} isAdmin={profile?.role === "admin"} />
-      <main className="mx-auto w-full max-w-5xl px-4 py-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+
+      {/* Header */}
+      <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/40 to-transparent py-6 px-4">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <Link href={`/trips/${tripId}`} className="text-sm text-blue-600 hover:underline">
-                ← Back to Itinerary
-              </Link>
-            </div>
-            <h1 className="mt-1 text-2xl font-bold">Itinerary Builder: {trip.name}</h1>
-            <p className="text-sm text-zinc-500">Add destinations (stops), schedule dates, and organize activities.</p>
+            <Link href={`/trips/${tripId}`} className="text-xs font-bold text-[#0891B2] hover:underline flex items-center gap-1">
+              ← Back to Itinerary View
+            </Link>
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              Itinerary Builder: <span className="text-[#0891B2]">{trip.name}</span>
+            </h1>
+            <p className="text-xs text-slate-500 font-medium">Add destination stops, dates, section budgets, and activities.</p>
           </div>
           <Link
             href={`/trips/${tripId}`}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+            className="btn-coral px-5 py-2.5 text-xs font-bold shadow-md"
           >
-            Done Editing
+            ✓ Done Editing
           </Link>
         </div>
+      </div>
 
-        {error ? <p className="mt-4 rounded bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
+      <main className="mx-auto w-full max-w-5xl px-4 py-8 space-y-8">
+        {error ? <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">{error}</p> : null}
 
         {/* Add Stop Section */}
-        <section className="mt-6 rounded-lg border bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold">Add a Destination / Section</h2>
-          <form action={addStop} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <section className="pacific-card p-6">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0891B2] text-xs text-white font-bold">
+              +
+            </span>
+            <h2 className="text-base font-bold text-slate-900">Add Destination / Section</h2>
+          </div>
+
+          <form action={addStop} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5 text-xs font-semibold text-slate-700">
             <input type="hidden" name="trip_id" value={tripId} />
-            <select name="city_id" required className="rounded-lg border px-3 py-2 text-sm lg:col-span-2">
-              <option value="">Select a City...</option>
+            <select name="city_id" required className="pacific-input lg:col-span-2 text-xs">
+              <option value="">Select a Destination City...</option>
               {allCities?.map((c) => (
                 <option key={c.city_id} value={c.city_id}>
                   {c.name}, {c.country}
                 </option>
               ))}
             </select>
-            <label className="flex flex-col text-xs text-zinc-500 font-medium">Start
-              <input type="date" name="start_date" className="rounded-lg border px-3 py-1.5 text-sm text-zinc-900" />
+            <label className="flex flex-col gap-1">Start Date
+              <input type="date" name="start_date" className="pacific-input text-xs" />
             </label>
-            <label className="flex flex-col text-xs text-zinc-500 font-medium">End
-              <input type="date" name="end_date" className="rounded-lg border px-3 py-1.5 text-sm text-zinc-900" />
+            <label className="flex flex-col gap-1">End Date
+              <input type="date" name="end_date" className="pacific-input text-xs" />
             </label>
             <div className="flex items-end">
               <button
                 type="submit"
-                className="w-full rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+                className="btn-coral w-full py-2 text-xs font-bold shadow-xs"
               >
                 + Add Section
               </button>
@@ -123,10 +134,11 @@ export default async function BuildPage({
         </section>
 
         {/* Stops List */}
-        <div className="mt-8 space-y-6">
+        <div className="space-y-6">
           {(stops ?? []).length === 0 ? (
-            <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-zinc-500">
-              No stops added yet. Use the form above to add your first destination.
+            <div className="rounded-xl border border-dashed border-teal-900/20 bg-white p-10 text-center">
+              <p className="text-sm text-slate-500 font-medium">No stops added to this trip yet.</p>
+              <p className="text-xs text-slate-400 mt-1">Use the form above to add your first destination section.</p>
             </div>
           ) : (
             (stops ?? []).map((stop, i) => {
@@ -135,25 +147,25 @@ export default async function BuildPage({
               const availableCatalogActivities = activitiesByCity[stop.city_id] ?? [];
 
               return (
-                <section key={stop.stop_id} className="rounded-lg border bg-white p-5 shadow-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+                <section key={stop.stop_id} className="pacific-card overflow-hidden">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-teal-900/10 bg-slate-50/70 p-5">
                     <div>
-                      <span className="text-xs font-semibold text-zinc-400">STOP #{i + 1}</span>
-                      <h2 className="text-lg font-bold">
+                      <span className="text-[10px] font-bold text-[#0891B2] uppercase tracking-wider">STOP #{i + 1}</span>
+                      <h2 className="text-lg font-extrabold text-slate-900">
                         {city?.name ?? "City"}, {city?.country}
                       </h2>
                     </div>
                     <form action={deleteStop}>
                       <input type="hidden" name="trip_id" value={tripId} />
                       <input type="hidden" name="stop_id" value={stop.stop_id} />
-                      <button type="submit" className="text-sm font-medium text-red-600 hover:underline">
+                      <button type="submit" className="text-xs font-semibold text-red-500 hover:text-red-700 hover:underline">
                         Remove Section
                       </button>
                     </form>
                   </div>
 
                   {/* Stop Settings Form */}
-                  <form action={updateStop} className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs font-medium">
+                  <form action={updateStop} className="p-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs font-semibold text-slate-700">
                     <input type="hidden" name="trip_id" value={tripId} />
                     <input type="hidden" name="stop_id" value={stop.stop_id} />
                     <label className="flex flex-col gap-1">Start Date
@@ -161,7 +173,7 @@ export default async function BuildPage({
                         type="date"
                         name="start_date"
                         defaultValue={stop.start_date ?? undefined}
-                        className="rounded border px-2 py-1.5 text-sm"
+                        className="pacific-input text-xs"
                       />
                     </label>
                     <label className="flex flex-col gap-1">End Date
@@ -169,7 +181,7 @@ export default async function BuildPage({
                         type="date"
                         name="end_date"
                         defaultValue={stop.end_date ?? undefined}
-                        className="rounded border px-2 py-1.5 text-sm"
+                        className="pacific-input text-xs"
                       />
                     </label>
                     <label className="flex flex-col gap-1">Section Budget (INR)
@@ -178,13 +190,13 @@ export default async function BuildPage({
                         name="section_budget_inr"
                         placeholder="e.g. 50000"
                         defaultValue={stop.section_budget_inr ?? undefined}
-                        className="rounded border px-2 py-1.5 text-sm"
+                        className="pacific-input text-xs"
                       />
                     </label>
                     <div className="flex items-end">
                       <button
                         type="submit"
-                        className="w-full rounded bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700"
+                        className="btn-teal w-full py-2 text-xs font-bold"
                       >
                         Save Section Info
                       </button>
@@ -192,25 +204,27 @@ export default async function BuildPage({
                     <label className="flex flex-col gap-1 sm:col-span-2 lg:col-span-4">Notes
                       <input
                         name="notes"
-                        placeholder="Hotel details, notes, etc."
+                        placeholder="Hotel details, transport notes, etc."
                         defaultValue={stop.notes ?? ""}
-                        className="rounded border px-2 py-1.5 text-sm font-normal"
+                        className="pacific-input text-xs font-normal"
                       />
                     </label>
                   </form>
 
-                  {/* Activity List & Add Activity Form */}
-                  <div className="mt-6 border-t pt-4">
-                    <h3 className="text-sm font-semibold">Activities in {city?.name}</h3>
+                  {/* Activities Subsection */}
+                  <div className="border-t border-slate-100 p-5 bg-slate-50/30">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                      Activities in {city?.name}
+                    </h3>
 
                     {/* Form to add an activity */}
-                    <form action={addTripActivity} className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-6 rounded-md bg-zinc-50 p-3 border">
+                    <form action={addTripActivity} className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-6 rounded-lg bg-white p-3.5 border border-slate-200 shadow-xs">
                       <input type="hidden" name="trip_id" value={tripId} />
                       <input type="hidden" name="stop_id" value={stop.stop_id} />
                       
                       <div className="sm:col-span-2">
-                        <label className="block text-xs text-zinc-500 font-medium mb-1">Catalog Activity</label>
-                        <select name="activity_id" className="w-full rounded border px-2 py-1.5 text-xs">
+                        <label className="block text-[11px] text-slate-500 font-bold mb-1">Catalog Activity</label>
+                        <select name="activity_id" className="pacific-input w-full text-xs">
                           <option value="">-- Or Custom Activity Below --</option>
                           {availableCatalogActivities.map((a) => (
                             <option key={a.activity_id} value={a.activity_id}>
@@ -221,34 +235,34 @@ export default async function BuildPage({
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="block text-xs text-zinc-500 font-medium mb-1">Custom Activity Name</label>
-                        <input name="custom_name" placeholder="Custom activity name" className="w-full rounded border px-2 py-1.5 text-xs" />
+                        <label className="block text-[11px] text-slate-500 font-bold mb-1">Custom Activity Name</label>
+                        <input name="custom_name" placeholder="Custom activity name" className="pacific-input w-full text-xs" />
                       </div>
 
                       <div>
-                        <label className="block text-xs text-zinc-500 font-medium mb-1">Day #</label>
-                        <input type="number" name="day_number" defaultValue={1} min={1} className="w-full rounded border px-2 py-1.5 text-xs" />
+                        <label className="block text-[11px] text-slate-500 font-bold mb-1">Day #</label>
+                        <input type="number" name="day_number" defaultValue={1} min={1} className="pacific-input w-full text-xs" />
                       </div>
 
                       <div>
-                        <label className="block text-xs text-zinc-500 font-medium mb-1">Planned Cost (INR)</label>
-                        <input type="number" name="planned_cost_inr" placeholder="₹" className="w-full rounded border px-2 py-1.5 text-xs" />
+                        <label className="block text-[11px] text-slate-500 font-bold mb-1">Cost (INR)</label>
+                        <input type="number" name="planned_cost_inr" placeholder="₹" className="pacific-input w-full text-xs" />
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label className="block text-xs text-zinc-500 font-medium mb-1">Time (e.g. 10:00 AM)</label>
-                        <input name="scheduled_time" placeholder="10:00 AM" className="w-full rounded border px-2 py-1.5 text-xs" />
+                        <label className="block text-[11px] text-slate-500 font-bold mb-1">Time (e.g. 10:00 AM)</label>
+                        <input name="scheduled_time" placeholder="10:00 AM" className="pacific-input w-full text-xs" />
                       </div>
 
                       <div className="sm:col-span-3">
-                        <label className="block text-xs text-zinc-500 font-medium mb-1">Notes</label>
-                        <input name="notes" placeholder="Reservation info, tips..." className="w-full rounded border px-2 py-1.5 text-xs" />
+                        <label className="block text-[11px] text-slate-500 font-bold mb-1">Notes</label>
+                        <input name="notes" placeholder="Reservation info, tips..." className="pacific-input w-full text-xs" />
                       </div>
 
                       <div className="sm:col-span-1 flex items-end">
                         <button
                           type="submit"
-                          className="w-full rounded bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700"
+                          className="btn-coral w-full py-2 text-xs font-bold shadow-xs"
                         >
                           + Add
                         </button>
@@ -258,7 +272,7 @@ export default async function BuildPage({
                     {/* Existing Activities */}
                     <div className="mt-3 space-y-2">
                       {stopActs.length === 0 ? (
-                        <p className="text-xs text-zinc-400 py-2">No activities added to this stop yet.</p>
+                        <p className="text-xs text-slate-400 py-2">No activities added to this stop yet.</p>
                       ) : (
                         stopActs.map((ta) => {
                           const catalogAct = ta.activity_id ? activityById.get(ta.activity_id) : null;
@@ -266,17 +280,17 @@ export default async function BuildPage({
                           return (
                             <div
                               key={ta.trip_activity_id}
-                              className="flex items-center justify-between rounded border bg-white p-2.5 text-xs"
+                              className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 text-xs shadow-xs"
                             >
                               <div className="flex items-center gap-3">
-                                <span className="rounded bg-zinc-100 px-2 py-0.5 font-semibold text-zinc-700">
+                                <span className="rounded bg-sky-50 px-2 py-0.5 font-bold text-[#0891B2] border border-sky-200">
                                   Day {ta.day_number}
                                 </span>
                                 <div>
-                                  <p className="font-semibold text-zinc-900">{name}</p>
-                                  <p className="text-zinc-500">
+                                  <p className="font-bold text-slate-900">{name}</p>
+                                  <p className="text-slate-500 text-[11px]">
                                     {catalogAct?.category ?? "Custom"}
-                                    {ta.scheduled_time ? ` · ${ta.scheduled_time}` : ""}
+                                    {ta.scheduled_time ? ` · ⏰ ${ta.scheduled_time}` : ""}
                                     {ta.planned_cost_inr ? ` · ₹${ta.planned_cost_inr.toLocaleString("en-IN")}` : ""}
                                     {ta.notes ? ` · Note: ${ta.notes}` : ""}
                                   </p>
@@ -285,7 +299,7 @@ export default async function BuildPage({
                               <form action={deleteTripActivity}>
                                 <input type="hidden" name="trip_id" value={tripId} />
                                 <input type="hidden" name="trip_activity_id" value={ta.trip_activity_id} />
-                                <button type="submit" className="text-red-600 hover:underline">
+                                <button type="submit" className="text-xs font-medium text-red-500 hover:underline">
                                   Delete
                                 </button>
                               </form>

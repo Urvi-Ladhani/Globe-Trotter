@@ -95,80 +95,83 @@ export default async function TripDetailPage({
   );
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#FDFBF7]">
       <Nav profile={profile} isAdmin={profile?.role === "admin"} />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8">
-        {/* Header and Controls */}
-        <div className="flex flex-wrap items-start justify-between gap-4">
+
+      {/* Hero Header */}
+      <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/50 to-transparent py-8 px-4">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold">{trip.name}</h1>
-              <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-semibold capitalize text-zinc-700">
+              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{trip.name}</h1>
+              <span className="rounded-full bg-sky-50 px-3 py-0.5 text-xs font-bold capitalize text-[#0891B2] border border-sky-200">
                 {trip.status}
               </span>
               {trip.is_public ? (
-                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                  Public
+                <span className="rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
+                  Public Link Active
                 </span>
               ) : null}
             </div>
-            <p className="mt-1 text-sm text-zinc-500">
-              {trip.start_date ?? "Start TBD"} — {trip.end_date ?? "End TBD"}
+            <p className="mt-1.5 text-sm text-slate-600 font-medium">
+              📅 {trip.start_date ?? "Dates TBD"} — {trip.end_date ?? "TBD"}
             </p>
-            {trip.description ? <p className="mt-2 text-sm text-zinc-600 max-w-2xl">{trip.description}</p> : null}
+            {trip.description ? <p className="mt-2 max-w-2xl text-xs text-slate-600">{trip.description}</p> : null}
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             <Link
               href={`/trips/${tripId}/build`}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+              className="btn-coral px-5 py-2.5 text-xs font-bold shadow-md"
             >
-              Edit Itinerary
+              ✎ Edit Itinerary
             </Link>
             <Link
               href={`/trips/${tripId}/budget`}
-              className="rounded-lg border bg-white px-4 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+              className="btn-teal-outline px-4 py-2 text-xs font-semibold shadow-xs"
             >
-              Budget & Expenses
+              💰 Budget & Expenses
             </Link>
           </div>
         </div>
+      </div>
 
-        {error ? <p className="mt-4 rounded bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
-        {message ? <p className="mt-4 rounded bg-emerald-50 p-3 text-sm text-emerald-700">{message}</p> : null}
+      <main className="mx-auto w-full max-w-6xl px-4 py-8 space-y-8">
+        {error ? <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">{error}</p> : null}
+        {message ? <p className="rounded-lg bg-emerald-50 p-3 text-xs font-semibold text-emerald-700 border border-emerald-200">{message}</p> : null}
 
-        {/* Quick Stats Bar */}
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-lg border bg-white p-4">
-            <p className="text-xs text-zinc-500">Stops</p>
-            <p className="mt-1 text-xl font-bold">{stops?.length ?? 0}</p>
+        {/* Quick Stats Metric Cards */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="pacific-card p-4">
+            <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Destinations</p>
+            <p className="mt-1 text-2xl font-extrabold text-slate-900">{stops?.length ?? 0}</p>
           </div>
-          <div className="rounded-lg border bg-white p-4">
-            <p className="text-xs text-zinc-500">Planned Activities</p>
-            <p className="mt-1 text-xl font-bold">{tripActivities?.length ?? 0}</p>
+          <div className="pacific-card p-4">
+            <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Scheduled Activities</p>
+            <p className="mt-1 text-2xl font-extrabold text-slate-900">{tripActivities?.length ?? 0}</p>
           </div>
-          <div className="rounded-lg border bg-white p-4">
-            <p className="text-xs text-zinc-500">Estimated Budget</p>
-            <p className="mt-1 text-xl font-bold">
+          <div className="pacific-card p-4">
+            <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Target Budget</p>
+            <p className="mt-1 text-2xl font-extrabold text-slate-900">
               {trip.estimated_budget_inr ? `₹${trip.estimated_budget_inr.toLocaleString("en-IN")}` : "—"}
             </p>
           </div>
-          <div className="rounded-lg border bg-white p-4">
-            <p className="text-xs text-zinc-500">Total Activity Cost</p>
-            <p className="mt-1 text-xl font-bold">₹{totalPlannedActivitiesInr.toLocaleString("en-IN")}</p>
+          <div className="pacific-card p-4">
+            <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Planned Activity Cost</p>
+            <p className="mt-1 text-2xl font-extrabold text-slate-900">₹{totalPlannedActivitiesInr.toLocaleString("en-IN")}</p>
           </div>
         </div>
 
-        {/* Main Content Grid: Itinerary + Sidebar */}
-        <div className="mt-8 grid gap-8 lg:grid-cols-3">
-          {/* Itinerary Sections */}
+        {/* Main Content Grid: Day-by-Day Timeline + Sidebar */}
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* Timeline */}
           <div className="space-y-6 lg:col-span-2">
-            <h2 className="text-xl font-semibold">Itinerary Stops & Schedule</h2>
+            <h2 className="text-xl font-bold text-slate-900">Itinerary Schedule</h2>
             {(stops ?? []).length === 0 ? (
-              <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-zinc-500">
-                <p>No stops added to this trip yet.</p>
-                <Link href={`/trips/${tripId}/build`} className="mt-2 inline-block font-semibold text-blue-600 underline">
-                  Add stops in the builder
+              <div className="rounded-xl border border-dashed border-teal-900/20 bg-white p-10 text-center">
+                <p className="text-sm text-slate-600">No destination stops added yet.</p>
+                <Link href={`/trips/${tripId}/build`} className="btn-coral mt-3 inline-block px-4 py-2 text-xs font-semibold">
+                  + Add First Stop in Builder
                 </Link>
               </div>
             ) : (
@@ -176,7 +179,6 @@ export default async function TripDetailPage({
                 const city = cityMap.get(stop.city_id);
                 const stopActs = activitiesByStop[stop.stop_id] ?? [];
                 
-                // Group activities by day_number
                 const dayGroups: Record<number, TripActivityRow[]> = {};
                 for (const act of stopActs) {
                   if (!dayGroups[act.day_number]) dayGroups[act.day_number] = [];
@@ -185,49 +187,53 @@ export default async function TripDetailPage({
                 const sortedDays = Object.keys(dayGroups).map(Number).sort((a, b) => a - b);
 
                 return (
-                  <div key={stop.stop_id} className="rounded-lg border bg-white p-6 shadow-sm">
-                    <div className="flex flex-wrap items-center justify-between border-b pb-3">
+                  <div key={stop.stop_id} className="pacific-card overflow-hidden">
+                    <div className="border-b border-teal-900/10 bg-slate-50/70 p-5 flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Stop {index + 1}</span>
-                        <h3 className="text-xl font-bold">{city?.name ?? "City"}, {city?.country}</h3>
-                        <p className="text-xs text-zinc-500">{stop.start_date} to {stop.end_date}</p>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0891B2]">Stop {index + 1}</span>
+                        <h3 className="text-xl font-extrabold text-slate-900">{city?.name ?? "City"}, {city?.country}</h3>
+                        <p className="text-xs text-slate-500 font-medium">📅 {stop.start_date} to {stop.end_date}</p>
                       </div>
                       {stop.section_budget_inr ? (
-                        <div className="text-right">
-                          <span className="text-xs text-zinc-500">Section Budget</span>
-                          <p className="font-semibold text-zinc-800">₹{stop.section_budget_inr.toLocaleString("en-IN")}</p>
+                        <div className="text-right rounded-lg bg-white px-3 py-1.5 border border-slate-200">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase">Section Budget</span>
+                          <p className="font-bold text-slate-900 text-sm">₹{stop.section_budget_inr.toLocaleString("en-IN")}</p>
                         </div>
                       ) : null}
                     </div>
 
                     {stop.notes ? (
-                      <p className="mt-3 rounded bg-zinc-50 p-2.5 text-xs text-zinc-600 italic">{stop.notes}</p>
+                      <p className="mx-5 mt-4 rounded-lg bg-amber-50/70 border border-amber-200 p-3 text-xs text-amber-900 italic">
+                        📌 {stop.notes}
+                      </p>
                     ) : null}
 
-                    {/* Day-by-Day Activities */}
-                    <div className="mt-4 space-y-4">
+                    {/* Day Schedule */}
+                    <div className="p-5 space-y-4">
                       {sortedDays.length === 0 ? (
-                        <p className="text-xs text-zinc-400">No activities scheduled for this stop.</p>
+                        <p className="text-xs text-slate-400 py-2">No activities scheduled for this stop yet.</p>
                       ) : (
                         sortedDays.map((dayNum) => (
-                          <div key={dayNum} className="rounded-md border border-zinc-100 bg-zinc-50/50 p-3">
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-600 mb-2">Day {dayNum}</h4>
+                          <div key={dayNum} className="rounded-lg border border-slate-200 bg-slate-50/40 p-3.5">
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-[#0891B2] mb-2.5">
+                              Day {dayNum}
+                            </h4>
                             <div className="space-y-2">
                               {dayGroups[dayNum].map((act) => {
                                 const catalogAct = act.activity_id ? activityById.get(act.activity_id) : null;
                                 const title = act.custom_name || catalogAct?.name || "Activity";
                                 return (
-                                  <div key={act.trip_activity_id} className="flex items-center justify-between rounded bg-white p-2.5 text-sm border shadow-xs">
+                                  <div key={act.trip_activity_id} className="flex items-center justify-between rounded-lg bg-white p-3 text-xs border border-slate-200 shadow-xs">
                                     <div>
-                                      <span className="font-medium text-zinc-900">{title}</span>
-                                      <div className="flex items-center gap-2 text-xs text-zinc-500 mt-0.5">
-                                        {catalogAct?.category ? <span>{catalogAct.category}</span> : null}
-                                        {act.scheduled_time ? <span>• {act.scheduled_time}</span> : null}
+                                      <span className="font-bold text-slate-900 text-sm">{title}</span>
+                                      <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                                        {catalogAct?.category ? <span className="rounded bg-sky-50 text-[#0891B2] px-1.5 py-0.5 text-[10px] font-semibold">{catalogAct.category}</span> : null}
+                                        {act.scheduled_time ? <span>• ⏰ {act.scheduled_time}</span> : null}
                                         {catalogAct?.duration_minutes ? <span>• {catalogAct.duration_minutes} mins</span> : null}
                                       </div>
-                                      {act.notes ? <p className="text-xs text-zinc-500 mt-1">{act.notes}</p> : null}
+                                      {act.notes ? <p className="text-xs text-slate-500 mt-1">Note: {act.notes}</p> : null}
                                     </div>
-                                    <div className="text-right font-medium text-zinc-700">
+                                    <div className="text-right font-bold text-slate-800 text-sm">
                                       {act.planned_cost_inr ? `₹${act.planned_cost_inr.toLocaleString("en-IN")}` : "—"}
                                     </div>
                                   </div>
@@ -244,24 +250,24 @@ export default async function TripDetailPage({
             )}
           </div>
 
-          {/* Sidebar: Public Sharing & Collaboration & Status */}
+          {/* Sidebar */}
           <div className="space-y-6">
             {/* Trip Settings */}
             {isOwner ? (
-              <section className="rounded-lg border bg-white p-5 shadow-sm">
-                <h3 className="font-semibold">Trip Status & Details</h3>
-                <form action={updateTrip} className="mt-3 flex flex-col gap-3 text-sm">
+              <section className="pacific-card p-5">
+                <h3 className="font-bold text-slate-900 text-base">Trip Settings</h3>
+                <form action={updateTrip} className="mt-3 flex flex-col gap-3 text-xs font-semibold text-slate-700">
                   <input type="hidden" name="trip_id" value={trip.trip_id} />
                   <input type="hidden" name="name" value={trip.name} />
-                  <label className="flex flex-col gap-1 text-xs font-medium">Status
-                    <select name="status" defaultValue={trip.status} className="rounded border px-2 py-1.5 text-sm">
+                  <label className="flex flex-col gap-1">Status
+                    <select name="status" defaultValue={trip.status} className="pacific-input">
                       <option value="upcoming">Upcoming</option>
                       <option value="ongoing">Ongoing</option>
                       <option value="completed">Completed</option>
                     </select>
                   </label>
-                  <label className="flex flex-col gap-1 text-xs font-medium">Estimated Budget (INR)
-                    <input type="number" name="estimated_budget_inr" defaultValue={trip.estimated_budget_inr ?? undefined} className="rounded border px-2 py-1.5 text-sm" />
+                  <label className="flex flex-col gap-1">Estimated Budget (INR)
+                    <input type="number" name="estimated_budget_inr" defaultValue={trip.estimated_budget_inr ?? undefined} className="pacific-input" />
                   </label>
                   <ImageUploadInput
                     name="cover_photo_url"
@@ -270,32 +276,32 @@ export default async function TripDetailPage({
                     folder="trips"
                     placeholder="https://images.unsplash.com/photo-..."
                   />
-                  <button type="submit" className="rounded bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700">Update Trip Settings</button>
+                  <button type="submit" className="btn-teal py-2 text-xs font-bold">
+                    Save Trip Settings
+                  </button>
                 </form>
               </section>
             ) : null}
 
             {/* Public Sharing */}
-            <section className="rounded-lg border bg-white p-5 shadow-sm">
-              <h3 className="font-semibold">Public Share Link</h3>
-              <p className="mt-1 text-xs text-zinc-500">
+            <section className="pacific-card p-5">
+              <h3 className="font-bold text-slate-900 text-base">Public Itinerary Link</h3>
+              <p className="mt-1 text-xs text-slate-500">
                 Share a read-only itinerary link with friends or family (expenses are never shown).
               </p>
 
               {trip.is_public && trip.share_token ? (
                 <div className="mt-3 space-y-2">
-                  <div className="rounded bg-zinc-50 p-2 text-xs font-mono break-all border">
+                  <div className="rounded-lg bg-slate-50 p-2.5 text-xs font-mono break-all border border-slate-200 text-slate-700">
                     /trips/share/{trip.share_token}
                   </div>
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/trips/share/${trip.share_token}`}
-                      target="_blank"
-                      className="rounded border px-3 py-1 text-xs font-medium hover:bg-zinc-50"
-                    >
-                      Open Link ↗
-                    </Link>
-                  </div>
+                  <Link
+                    href={`/trips/share/${trip.share_token}`}
+                    target="_blank"
+                    className="block text-center rounded-lg border border-[#0891B2] bg-white py-1.5 text-xs font-bold text-[#0891B2] hover:bg-sky-50"
+                  >
+                    Open Public View ↗
+                  </Link>
                 </div>
               ) : null}
 
@@ -305,8 +311,8 @@ export default async function TripDetailPage({
                   <input type="hidden" name="is_public" value={trip.is_public ? "false" : "true"} />
                   <button
                     type="submit"
-                    className={`w-full rounded-lg px-3 py-1.5 text-xs font-semibold text-white ${
-                      trip.is_public ? "bg-red-600 hover:bg-red-700" : "bg-emerald-600 hover:bg-emerald-700"
+                    className={`w-full rounded-lg py-2 text-xs font-bold text-white transition-colors ${
+                      trip.is_public ? "bg-slate-700 hover:bg-slate-800" : "btn-coral"
                     }`}
                   >
                     {trip.is_public ? "Disable Public Sharing" : "Enable Public Sharing"}
@@ -316,28 +322,28 @@ export default async function TripDetailPage({
             </section>
 
             {/* Trip Collaborators */}
-            <section className="rounded-lg border bg-white p-5 shadow-sm">
-              <h3 className="font-semibold">Collaborators</h3>
-              <p className="mt-1 text-xs text-zinc-500">Invite travel partners to view or edit this trip.</p>
+            <section className="pacific-card p-5">
+              <h3 className="font-bold text-slate-900 text-base">Collaborators</h3>
+              <p className="mt-1 text-xs text-slate-500">Invite travel partners to view or edit this trip.</p>
 
               <div className="mt-3 space-y-2">
                 {(collaborators ?? []).length === 0 ? (
-                  <p className="text-xs text-zinc-400">No collaborators added yet.</p>
+                  <p className="text-xs text-slate-400 py-1">No collaborators added yet.</p>
                 ) : (
                   (collaborators ?? []).map((collab) => {
                     const p = profileMap.get(collab.user_id);
                     const name = p ? `${p.first_name} ${p.last_name ?? ""}`.trim() : collab.user_id;
                     return (
-                      <div key={collab.user_id} className="flex items-center justify-between rounded border p-2 text-xs">
+                      <div key={collab.user_id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-2.5 text-xs">
                         <div>
-                          <p className="font-medium">{name}</p>
-                          <p className="text-zinc-500 capitalize">{collab.permission} · {collab.status}</p>
+                          <p className="font-bold text-slate-900">{name}</p>
+                          <p className="text-slate-500 text-[11px] capitalize">{collab.permission} · {collab.status}</p>
                         </div>
                         {isOwner ? (
                           <form action={removeCollaborator}>
                             <input type="hidden" name="trip_id" value={tripId} />
                             <input type="hidden" name="user_id" value={collab.user_id} />
-                            <button type="submit" className="text-red-500 hover:underline">Remove</button>
+                            <button type="submit" className="text-xs font-medium text-red-500 hover:underline">Remove</button>
                           </form>
                         ) : null}
                       </div>
@@ -347,27 +353,25 @@ export default async function TripDetailPage({
               </div>
 
               {isOwner ? (
-                <form action={inviteCollaborator} className="mt-4 flex flex-col gap-2 border-t pt-3 text-xs">
+                <form action={inviteCollaborator} className="mt-4 flex flex-col gap-2.5 border-t border-slate-100 pt-3 text-xs font-semibold text-slate-700">
                   <input type="hidden" name="trip_id" value={tripId} />
-                  <label className="flex flex-col gap-1 font-medium">
-                    User ID to invite:
+                  <label className="flex flex-col gap-1">User ID to invite:
                     <input
                       name="user_id"
                       required
                       placeholder="e.g. user uuid"
-                      className="rounded border px-2 py-1 text-xs"
+                      className="pacific-input text-xs"
                     />
                   </label>
-                  <label className="flex flex-col gap-1 font-medium">
-                    Permission:
-                    <select name="permission" className="rounded border px-2 py-1 text-xs">
+                  <label className="flex flex-col gap-1">Permission:
+                    <select name="permission" className="pacific-input text-xs">
                       <option value="view">View only</option>
                       <option value="edit">Can Edit</option>
                     </select>
                   </label>
                   <button
                     type="submit"
-                    className="mt-1 rounded bg-zinc-900 px-3 py-1.5 font-semibold text-white hover:bg-zinc-700"
+                    className="btn-coral py-2 font-bold shadow-xs"
                   >
                     Send Invitation
                   </button>
