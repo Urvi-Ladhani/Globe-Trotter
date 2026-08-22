@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireActiveUser } from "@/lib/auth";
 import { Nav } from "@/components/nav";
-import { bookmarkCity, unbookmarkCity } from "@/lib/actions/profile";
+import { saveDestination, removeSavedDestination } from "@/lib/actions/profile";
 
 export const dynamic = "force-dynamic";
 

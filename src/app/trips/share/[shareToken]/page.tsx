@@ -68,42 +68,43 @@ export default async function PublicTripSharePage({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link href="/" className="text-lg font-bold">GlobeTrotter</Link>
-          <div className="flex items-center gap-3 text-sm">
-            <Link href="/login" className="text-zinc-600 hover:underline">Log in</Link>
-            <Link href="/register" className="rounded-lg bg-zinc-900 px-3 py-1.5 font-semibold text-white hover:bg-zinc-700">
-              Sign up
+    <div className="flex min-h-screen flex-col bg-[#FDFBF7]">
+      <header className="sticky top-0 z-40 bg-[#0B4F6C] text-white shadow-md border-b border-[#083D54]">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3.5">
+          <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF5A5F] text-white shadow-xs">
+              ✈
+            </span>
+            <span>Globe<span className="text-[#38BDF8]">Trotter</span></span>
+          </Link>
+          <div className="flex items-center gap-3 text-xs font-semibold">
+            <Link href="/login" className="text-sky-100 hover:text-white">Log in</Link>
+            <Link href="/register" className="btn-coral px-3.5 py-1.5 shadow-xs">
+              Create Free Account
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-8">
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                Shared Itinerary
-              </span>
-              <h1 className="mt-2 text-3xl font-bold">{trip.name}</h1>
-              <p className="mt-1 text-sm text-zinc-500">
-                {trip.start_date ?? "TBD"} – {trip.end_date ?? "TBD"}
-              </p>
-            </div>
-          </div>
+      <main className="mx-auto w-full max-w-5xl px-4 py-8 space-y-8">
+        <div className="pacific-card p-6 sm:p-8">
+          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 border border-emerald-200">
+            Shared Public Itinerary
+          </span>
+          <h1 className="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl">{trip.name}</h1>
+          <p className="mt-1 text-sm font-medium text-slate-500">
+            📅 {trip.start_date ?? "TBD"} – {trip.end_date ?? "TBD"}
+          </p>
           {trip.description ? (
-            <p className="mt-4 text-sm text-zinc-600 border-t pt-3">{trip.description}</p>
+            <p className="mt-4 text-xs text-slate-600 border-t border-slate-100 pt-3 leading-relaxed">{trip.description}</p>
           ) : null}
         </div>
 
-        <div className="mt-8 space-y-6">
-          <h2 className="text-xl font-bold">Trip Itinerary</h2>
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold text-slate-900">Itinerary Highlights</h2>
 
           {(stops ?? []).length === 0 ? (
-            <p className="rounded-lg border bg-white p-6 text-sm text-zinc-500">No stops in this itinerary.</p>
+            <p className="pacific-card p-8 text-center text-xs text-slate-400">No stops recorded in this itinerary.</p>
           ) : (
             (stops ?? []).map((stop, index) => {
               const city = cityMap.get(stop.city_id);
@@ -117,32 +118,33 @@ export default async function PublicTripSharePage({
               const sortedDays = Object.keys(dayGroups).map(Number).sort((a, b) => a - b);
 
               return (
-                <div key={stop.stop_id} className="rounded-lg border bg-white p-6 shadow-sm">
-                  <div className="border-b pb-3">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Stop {index + 1}</span>
-                    <h3 className="text-xl font-bold">{city?.name ?? "City"}, {city?.country}</h3>
-                    <p className="text-xs text-zinc-500">{stop.start_date} to {stop.end_date}</p>
-                    {stop.notes ? <p className="mt-2 text-xs text-zinc-600 italic">{stop.notes}</p> : null}
+                <div key={stop.stop_id} className="pacific-card overflow-hidden">
+                  <div className="border-b border-teal-900/10 bg-slate-50/70 p-5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#0891B2]">Stop #{index + 1}</span>
+                    <h3 className="text-xl font-extrabold text-slate-900">{city?.name ?? "City"}, {city?.country}</h3>
+                    <p className="text-xs text-slate-500 font-medium">📅 {stop.start_date} to {stop.end_date}</p>
+                    {stop.notes ? <p className="mt-2 text-xs text-slate-600 italic">📌 {stop.notes}</p> : null}
                   </div>
 
-                  <div className="mt-4 space-y-3">
+                  <div className="p-5 space-y-4">
                     {sortedDays.length === 0 ? (
-                      <p className="text-xs text-zinc-400">No scheduled activities.</p>
+                      <p className="text-xs text-slate-400">No scheduled activities listed.</p>
                     ) : (
                       sortedDays.map((dayNum) => (
-                        <div key={dayNum} className="rounded-md border border-zinc-100 bg-zinc-50/50 p-3">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-600 mb-2">Day {dayNum}</h4>
+                        <div key={dayNum} className="rounded-lg border border-slate-200 bg-slate-50/40 p-3.5">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-[#0891B2] mb-2.5">Day {dayNum}</h4>
                           <div className="space-y-2">
                             {dayGroups[dayNum].map((act) => {
                               const catalogAct = act.activity_id ? activityById.get(act.activity_id) : null;
                               const title = act.custom_name || catalogAct?.name || "Activity";
                               return (
-                                <div key={act.trip_activity_id} className="flex items-center justify-between rounded bg-white p-2.5 text-sm border shadow-xs">
+                                <div key={act.trip_activity_id} className="flex items-center justify-between rounded-lg bg-white p-3 text-xs border border-slate-200 shadow-xs">
                                   <div>
-                                    <span className="font-medium text-zinc-900">{title}</span>
-                                    <div className="flex items-center gap-2 text-xs text-zinc-500 mt-0.5">
-                                      {catalogAct?.category ? <span>{catalogAct.category}</span> : null}
-                                      {act.scheduled_time ? <span>• {act.scheduled_time}</span> : null}
+                                    <span className="font-bold text-slate-900 text-sm">{title}</span>
+                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                                      {catalogAct?.category ? <span className="rounded bg-sky-50 text-[#0891B2] px-1.5 py-0.5 text-[10px] font-semibold">{catalogAct.category}</span> : null}
+                                      {act.scheduled_time ? <span>• ⏰ {act.scheduled_time}</span> : null}
+                                      {catalogAct?.duration_minutes ? <span>• {catalogAct.duration_minutes} mins</span> : null}
                                     </div>
                                   </div>
                                 </div>
