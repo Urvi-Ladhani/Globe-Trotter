@@ -1,407 +1,150 @@
-GlobeTrotter
+# GlobeTrotter - Multi-City Travel Planner and Itinerary Platform
 
-Empowering Personalized Travel Planning
+**Odoo x LDCE Ahmedabad Hackathon 2026 - Virtual Round Project**
 
-GlobeTrotter is a personalized travel-planning web application designed
-to make trip planning simple, interactive, and organized. It allows
-users to discover destinations, create customized multi-city
-itineraries, manage activities and travel dates, estimate expenses, and
-visualize their complete journey in one place.
+GlobeTrotter is a full-stack, responsive travel planning and itinerary management web application built for modern travelers. It streamlines the end-to-end journey lifecycle—from multi-destination discovery and day-by-day scheduling to collaborative planning, expense tracking with multi-currency conversion, and community itinerary sharing.
 
-The project is designed around the idea of turning travel planning from
-a collection of separate tasks into one connected experience --- Dream
-→ Plan → Organize → Explore.
+---
 
-Key Features
+## Key Highlights
 
-Authentication
+- **Multi-City Itinerary Builder**: Create trips with multiple stops, reorder destination sequences, schedule day-by-day activities, and allocate section budgets.
+- **MakeMyTrip-Style Date Range Picker**: Interactive dual-card date range selector with automatic constraints (`endDate >= startDate`), visual month calendar navigation, and quick duration presets (+3 days, 1 week, 2 weeks).
+- **3-Tier Trip Visibility & Collaboration**:
+  - **Private**: Accessible exclusively to the creator and explicitly invited collaborators.
+  - **Shared via Secret Link**: Accessible via unique tokenized URLs (`/trips/share/[shareToken]`) with 1-click collaborator joining and itinerary cloning.
+  - **Public**: Discoverable in the community explore feed for public discovery and template copying.
+- **Travel Budgeting & Multi-Currency Engine**: Live expense logging per category (Flights, Accommodation, Food, Activities, Transport, Shopping), section budget progress meters, and dynamic currency conversions against real-time exchange rates (INR, USD, EUR, GBP, AED, JPY, AUD, CAD, SGD, THB).
+- **Media Upload System**: Dual-mode image handling allowing direct high-resolution file uploads to Supabase Storage buckets or external direct URLs for profile avatars, trip covers, and community posts.
+- **Community Feed & Template Cloning**: Social travel hub where travelers publish experiences, link trips and activities, interact through likes and comments, and clone public itineraries as personalized templates.
+- **Destination & Activity Catalog**: Filterable global city directory with popularity scores, cost indexes, categorized activities, and community submissions managed via administrative review tools.
+- **Zero-Trust Security & Supabase RLS**: Fine-grained PostgreSQL Row Level Security policies with `SECURITY DEFINER` helper functions to avoid recursion and protect user itineraries, expenses, and collaboration states.
+- **Pacific Horizon Design System**: Cohesive color palette utilizing Ocean Teal (`#0B4F6C`), Coral Accent (`#FF5A5F`), Sky Highlights (`#0891B2`), and Sand Off-White (`#FDFBF7`) paired with vector Lucide icons.
 
-User registration and login
+---
 
-Secure account-based trip management
+## Technical Stack
 
-User profile and settings
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | Next.js 16 (App Router, Server Actions, Dynamic Streaming) |
+| **Language** | TypeScript 5 (Strict Mode) |
+| **Styling** | Tailwind CSS v4, Pacific Horizon Design System |
+| **Icons** | Lucide React |
+| **Database** | PostgreSQL on Supabase |
+| **Authentication** | Supabase Auth (Email/Password + Google OAuth) |
+| **Storage** | Supabase Storage Buckets (`media`) |
+| **Security** | PostgreSQL Row Level Security (RLS) with Security Definer Functions |
+| **Build & Tooling** | Turbopack, PostCSS, ESLint |
 
-Personalized Home / Landing Page
+---
 
-Search destinations
+## Database Architecture & Entity Relationships
 
-Top regional selections
+The relational schema is configured in PostgreSQL under the `public` schema with foreign key constraints, automatic timestamps, and cascade behaviors:
 
-Previous trips
+- `profiles`: User account data, roles (`traveler`, `admin`), home locations, preferences, and avatar URLs.
+- `trips`: Core trip entities storing dates, estimated budgets, 3-tier visibility flags (`is_public`, `share_token`), and status (`planning`, `upcoming`, `ongoing`, `completed`).
+- `trip_stops`: Sequential destination stops per trip with arrival/departure dates, order indices, section budgets, and local notes.
+- `trip_activities`: Scheduled activities mapped to specific stops and day numbers with planned costs and scheduled times.
+- `trip_collaborators`: Multi-user access control list defining permissions (`view`, `edit`) and invitation states (`pending`, `accepted`, `declined`).
+- `expenses`: Itemized travel expenses with currency conversion factors and category tagging.
+- `cities`: Global destination catalog with region classifications, popularity metrics, and cost index scores.
+- `activities`: Curated and user-submitted activity database with admin approval statuses.
+- `community_posts`: Social feed posts with media attachments and references to trips and activities.
+- `post_likes` & `post_comments`: Community engagement and discussion records.
+- `saved_destinations`: Traveler wishlist and bookmarking records.
+- `currency_rates`: Base exchange rates against INR for real-time financial conversions.
 
-Quick access to trip planning
+---
 
-Trip recommendations
+## Installation & Local Development
 
-Trip Creation
+### Prerequisites
 
-Create a new trip
+- Node.js 18.18.0 or higher
+- npm 9.0.0 or higher
+- Supabase Project (Database, Auth, and Storage enabled)
 
-Add trip name and description
+### 1. Clone the Repository
 
-Select start and end dates
+```bash
+git clone https://github.com/urvi-ladhani/Globe-Trotter.git
+cd Globe-Trotter
+```
 
-Select destinations
+### 2. Install Dependencies
 
-Upload an optional cover image
-
-Start from suggested destinations or trip templates
-
-️ Multi-City Itinerary Builder
-
-Add multiple cities/stops
-
-Assign dates to each stop
-
-Add activities to individual days
-
-Reorder destinations
-
-Build a complete day-wise itinerary
-
-Destination & Activity Discovery
-
-Search cities and destinations
-
-Search activities
-
-Filter activities by type, cost, or duration
-
-View activity information before adding it to a trip
-
-Itinerary & Calendar View
-
-Day-wise itinerary
-
-Timeline-style trip visualization
-
-Activity timings
-
-City-wise organization
-
-Calendar view of the complete journey
-
-Easy itinerary editing
-
-Budget & Cost Management
-
-Estimate total trip cost
-
-Track transportation, accommodation, activities, and meals
-
-View daily average cost
-
-Identify expensive days
-
-Visual cost breakdowns
-
-Smart Trip Planning
-
-GlobeTrotter also provides planning-oriented features such as: - Find a
-trip based on budget, duration, and travel style - Quick trip planning -
-Budget-based destination suggestions - Ready-made trip templates -
-Weekend getaway suggestions - Explore destinations by travel style
-
-Sharing & Community
-
-Share itineraries publicly
-
-Public itinerary view
-
-Copy an existing trip
-
-Discover trips created by other users
-
-Community-based travel inspiration
-
-User Profile
-
-Edit personal information
-
-Profile picture
-
-Saved destinations
-
-Language preferences
-
-Manage personal travel plans
-
-Admin / Analytics Dashboard
-
-Monitor platform activity
-
-View user and trip statistics
-
-Track popular cities and activities
-
-Analyze user engagement
-
-Manage platform data
-
-How GlobeTrotter Works
-
- ┌─────────────────┐
- │ Login / Signup│
- └────────┬────────┘
- ↓
- ┌─────────────────┐
- │ Landing / Home │
- └────────┬────────┘
- ↓
- ┌────────────────────────┐
- │ Discover / Plan a Trip │
- └────────────┬───────────┘
- ↓
- ┌─────────────────┐
- │ Select Cities │
- └────────┬────────┘
- ↓
- ┌─────────────────┐
- │ Add Activities │
- └────────┬────────┘
- ↓
- ┌─────────────────┐
- │ Build Itinerary │
- └────────┬────────┘
- ↓
- ┌────────────────────────┐
- │ Budget & Cost Analysis │
- └────────────┬───────────┘
- ↓
- ┌─────────────────┐
- │ Calendar / View │
- └────────┬────────┘
- ↓
- ┌─────────────────┐
- │ Share Your Trip │
- └─────────────────┘
-
-️ Main Screens
-
-Screen Purpose
-
-Login / Signup Authenticate users
-Landing Page Discover destinations and start planning
-Create Trip Create the basic trip
-My Trips View and manage saved trips
-Itinerary Builder Build the complete day-wise itinerary
-Itinerary View View the finalized itinerary
-City Search Find and add destinations
-Activity Search Find and add activities
-Budget & Cost Track estimated trip expenses
-Calendar / Timeline Visualize the trip schedule
-Shared Itinerary Share and discover trips
-User Profile Manage account and preferences
-Community Explore trips shared by users
-Admin Dashboard Analyze platform activity
-
-Sample Trips
-
-The application can be populated with realistic sample itineraries such
-as:
-
-Maharashtra Explorer --- Mumbai → Lonavala → Pune
-
-️ Himachal Adventure --- Delhi → Shimla → Manali
-
-️ Goa Chill Trip --- North Goa → South Goa
-
-Rajasthan Royal Route --- Jaipur → Jodhpur → Udaipur
-
-Kerala Nature Escape --- Kochi → Munnar → Thekkady → Alleppey
-
-Europe Highlights --- Paris → Amsterdam → Rome
-
-Japan Discovery --- Tokyo → Kyoto → Osaka
-
-️ Dubai Premium Escape --- Dubai → Abu Dhabi
-
-️ Golden Triangle --- Delhi → Agra → Jaipur
-
-Bali Experience --- Ubud → Kuta → Nusa Penida
-
-Why GlobeTrotter?
-
-Planning a trip often involves switching between destination websites,
-activity lists, maps, calendars, notes, and budget calculations.
-
-GlobeTrotter brings these activities together into a single platform
-where users can:
-
-Discover → Customize → Organize → Calculate → Visualize → Share
-
-This makes the entire planning process easier while giving users
-complete visibility of their journey.
-
-️ Tech Stack
-
-Frontend
-
-React.js
-
-HTML5
-
-CSS / SCSS
-
-JavaScript
-
-Responsive UI
-
-Backend
-
-Node.js
-
-Express.js
-
-REST APIs
-
-Database
-
-Relational database
-
-User data
-
-Trips
-
-Cities
-
-Activities
-
-Itinerary items
-
-Expenses
-
-Development Tools
-
-Git
-
-GitHub
-
-VS Code
-
-npm
-
-Project Structure
-
-GlobeTrotter/
-│
-├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── features/
-│ │ ├── assets/
-│ │ └── ...
-│ ├── public/
-│ └── package.json
-│
-├── backend/
-│ ├── routes/
-│ ├── controllers/
-│ ├── models/
-│ ├── middleware/
-│ ├── config/
-│ └── package.json
-│
-├── README.md
-└── ...
-
-Folder names may vary depending on the final implementation.
-
-Getting Started
-
-1. Clone the repository
-
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd GlobeTrotter
-
-2. Install frontend dependencies
-
-cd frontend
+```bash
 npm install
+```
 
-3. Start the frontend
+### 3. Configure Environment Variables
 
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+```
+
+### 4. Database & Storage Initialization
+
+1. Execute the schema migration SQL scripts in your Supabase SQL Editor.
+2. In Supabase Dashboard, create a public Storage bucket named `media` to support image uploads.
+3. Configure RLS storage policies allowing authenticated users to upload and public users to read media objects.
+
+### 5. Run Development Server
+
+```bash
 npm run dev
+```
 
-4. Install backend dependencies
+Navigate to `http://localhost:3000` in your browser.
 
-Open another terminal:
+### 6. Production Build
 
-cd backend
-npm install
+To verify type safety and generate an optimized production bundle:
 
-5. Start the backend
+```bash
+npm run build
+npm run start
+```
 
-npm run dev
+---
 
-Make sure the required database connection and environment variables are
-configured before starting the backend.
+## Core Application Routes
 
-Environment Variables
+| Path | Description | Access |
+| :--- | :--- | :--- |
+| `/` | Landing page featuring hero banner, destination search, regional carousels, and quick trip links | Public / Authenticated |
+| `/login` & `/register` | Authentication portals supporting email credentials and Google OAuth | Public |
+| `/onboarding` | Profile initialization collecting travel preferences and home location | Authenticated |
+| `/trips` | Personal trip hub managing upcoming, ongoing, and completed trips, plus collaboration invites | Authenticated |
+| `/trips/new` | Multi-field trip creation form with MakeMyTrip date range picker and 3-tier visibility settings | Authenticated |
+| `/trips/[tripId]` | Comprehensive trip overview with day-by-day timelines, budget summaries, and collaborator access controls | Creator / Collaborator |
+| `/trips/[tripId]/build` | Interactive builder to add/reorder destination stops and schedule activities | Creator / Editor |
+| `/trips/[tripId]/budget` | Expense ledger with category breakdowns, section progress meters, and dynamic currency conversions | Creator / Collaborator |
+| `/trips/share/[shareToken]` | Tokenized public preview page with 1-click collaborator joining and itinerary cloning | Public / Token Holder |
+| `/cities` | Global city directory with search, region filters, cost indexes, and bookmarking | Authenticated |
+| `/activities` | Experience catalog with category filters, trip stop scheduling, and user contribution forms | Authenticated |
+| `/calendar` | Chronological multi-trip calendar view displaying overlapping stays and scheduled itineraries | Authenticated |
+| `/community` | Social feed displaying public itineraries for cloning, traveler stories, likes, and comments | Authenticated |
+| `/admin` | Administrative dashboard for reviewing and approving community-submitted activities | Admin Only |
 
-Create a .env file in the backend directory and configure the required
-values.
+---
 
-Example:
+## Resources & Documentation
 
-PORT=3000
-DATABASE_URL=your_database_connection
-JWT_SECRET=your_secret_key
+- **Next.js Documentation**: [https://nextjs.org/docs](https://nextjs.org/docs)
+- **Supabase Documentation**: [https://supabase.com/docs](https://supabase.com/docs)
+- **Tailwind CSS Documentation**: [https://tailwindcss.com/docs](https://tailwindcss.com/docs)
+- **Lucide Icons Catalog**: [https://lucide.dev/icons](https://lucide.dev/icons)
+- **Hackathon Context**: Developed for the **Odoo x LDCE Ahmedabad Hackathon 2026 (Virtual Round)**.
 
-Do not commit real credentials, API keys, database passwords, or
-secret tokens to GitHub.
+---
 
-Project Goals
+## License
 
-GlobeTrotter focuses on:
-
-Simplifying multi-city travel planning
-
-Creating personalized itineraries
-
-Helping users stay within budget
-
-Making travel plans easy to visualize
-
-Providing destination and activity discovery
-
-Enabling itinerary sharing
-
-Maintaining structured travel data using a relational database
-
-Providing a responsive and user-friendly experience
-
-Future Enhancements
-
-Possible future improvements include:
-
-Real-time flight and hotel integration
-
-Live weather information
-
-Interactive maps and route optimization
-
-AI-assisted itinerary generation
-
-Real-time travel alerts
-
-Collaborative trip editing
-
-Currency conversion
-
-Offline itinerary access
-
-Personalized recommendations based on previous trips
-
-Team
-
-GlobeTrotter --- Hackathon Project
-
-Built with ️ as a travel-planning solution focused on making
-personalized trip planning easier, smarter, and more enjoyable.
-
-License
-
-This project was created for educational and hackathon purposes
+This project is developed for educational and hackathon submission purposes.
