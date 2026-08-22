@@ -1,4 +1,5 @@
-import { MapPin, Calendar, Users } from 'lucide-react';
+import React from 'react';
+import { MapPin, Calendar, Users, Image as ImageIcon } from 'lucide-react';
 
 export interface Destination {
   id: string;
@@ -8,8 +9,10 @@ export interface Destination {
   tag: string;
   description: string;
   rating: number;
-  cost: string; // $, $$, $$$
-  style: string; // Budget, Adventure, Luxury, Culture, Food
+  cost: string; 
+  style: string;
+  duration: string;
+  groupSize: string;
 }
 
 interface RegionalSelectionsProps {
@@ -27,35 +30,37 @@ export const DestinationCard: React.FC<{ destination: Destination; onClick: () =
           className="dest-img"
           loading="lazy"
         />
-        <div className="dest-gradient"></div>
+        {/* Card Badge overlay */}
+        <div className="dest-tag-badge">{destination.tag}</div>
       </div>
       
-      <div className="dest-info-overlay">
-        <span className="dest-tag">{destination.tag}</span>
-        <h3 className="dest-title">{destination.city} — {destination.style} stop</h3>
-        
-        <span className="dest-location">
-          <MapPin size={10} style={{ color: 'var(--accent-gold)' }} />
-          {destination.country}
-        </span>
-        
-        <div style={{ display: 'flex', gap: '10px', fontSize: '11px', color: 'var(--text-secondary)', margin: '4px 0 8px 0' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <Calendar size={11} /> 10 days
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <Users size={11} /> 2 people
-          </span>
+      <div className="dest-info-container">
+        <div className="dest-header-row">
+          <h3 className="dest-card-title">{destination.city}</h3>
+          <span className="dest-country">{destination.country}</span>
         </div>
         
-        <div className="dest-footer">
-          <div className="dest-meta">
-            <span className="dest-meta-label">Est. Cost</span>
-            <span className="dest-meta-value">{destination.cost}</span>
+        <p className="dest-desc-text">{destination.description}</p>
+        
+        <div className="dest-details-row">
+          <span className="dest-detail-pill">
+            <Calendar size={12} className="dest-detail-icon" />
+            {destination.duration}
+          </span>
+          <span className="dest-detail-pill">
+            <Users size={12} className="dest-detail-icon" />
+            {destination.groupSize}
+          </span>
+        </div>
+
+        <div className="dest-card-footer">
+          <div className="dest-price-block">
+            <span className="dest-price-label">EST. COST</span>
+            <span className="dest-price-value">{destination.cost}</span>
           </div>
           
-          <button className="dest-btn" aria-label={`Explore ${destination.city}`}>
-            Explore
+          <button className="btn-dest-explore">
+            EXPLORE
           </button>
         </div>
       </div>
@@ -65,41 +70,35 @@ export const DestinationCard: React.FC<{ destination: Destination; onClick: () =
 
 export const RegionalSelections: React.FC<RegionalSelectionsProps> = ({ destinations, onSelectDestination }) => {
   return (
-    <section className="regions-section container" id="explore">
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '32px' }}>
-        <div>
-          <span className="eyebrow">Top Regional Selections</span>
-          <h2 className="section-title">Popular Destinations</h2>
-          <p className="section-desc" style={{ marginBottom: 0 }}>
-            Hand-picked curated destinations for your next multi-city journey.
-          </p>
+    <section className="regions-section" id="explore">
+      <div className="container">
+        {/* Section Header */}
+        <div className="regions-header-row">
+          <div>
+            <span className="eyebrow" style={{ color: 'var(--accent-gold)' }}>TOP REGIONAL SELECTIONS</span>
+            <h2 className="section-title">Popular Destinations</h2>
+          </div>
+          <a href="#" className="view-all-link" onClick={(e) => { e.preventDefault(); alert("Exploring all destinations..."); }}>
+            View all destinations &rarr;
+          </a>
         </div>
-        <a href="#all-destinations" className="view-all-link" onClick={(e) => { e.preventDefault(); alert("Exploring all regional selections..."); }}>
-          View all →
-        </a>
-      </div>
 
-      {destinations.length > 0 ? (
-        <div className="regions-grid">
-          {destinations.map((dest) => (
-            <DestinationCard 
-              key={dest.id} 
-              destination={dest} 
-              onClick={() => onSelectDestination(dest)} 
-            />
-          ))}
-        </div>
-      ) : (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '48px 24px', 
-          backgroundColor: 'var(--bg-secondary)', 
-          borderRadius: '16px', 
-          color: 'var(--text-secondary)' 
-        }}>
-          <p style={{ fontSize: '15px' }}>No destinations match your search criteria. Try a different term or style.</p>
-        </div>
-      )}
+        {destinations.length > 0 ? (
+          <div className="regions-grid-five">
+            {destinations.map((dest) => (
+              <DestinationCard 
+                key={dest.id} 
+                destination={dest} 
+                onClick={() => onSelectDestination(dest)} 
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="no-destinations-fallback">
+            <p>No popular destinations found matching your query.</p>
+          </div>
+        )}
+      </div>
     </section>
   );
 };

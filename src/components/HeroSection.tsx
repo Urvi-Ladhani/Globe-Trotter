@@ -1,50 +1,66 @@
 import React from 'react';
-import { ArrowRight, Compass } from 'lucide-react';
+import { Navbar } from './Navbar';
 
 interface HeroSectionProps {
   onPlanTripClick: () => void;
   onExploreClick: () => void;
+  currentPage: string;
+  onNavigate: (page: string) => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onPlanTripClick, onExploreClick }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ 
+  onPlanTripClick, 
+  onExploreClick,
+  currentPage,
+  onNavigate
+}) => {
   return (
-    <header className="hero-wrapper">
-      {/* Immersive background image (Mount Bromo / Earthy premium travel feel) */}
+    <header className="hero-wrapper" id="home">
+      {/* Immersive mountain/volcano sunrise background */}
       <img 
         src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80" 
-        alt="Dramatic mountain landscape at sunrise" 
+        alt="Dramatic mountain range sunrise landscape" 
         className="hero-bg"
       />
       <div className="hero-overlay"></div>
       
-      <div className="container" style={{ position: 'relative', zIndex: 5 }}>
+      {/* Navbar overlaying inside the hero wrapper */}
+      <Navbar 
+        currentPage={currentPage}
+        onNavigate={onNavigate}
+        onPlanTripClick={onPlanTripClick}
+      />
+
+      <div className="container hero-container">
         <div className="hero-content">
-          <span className="eyebrow" style={{ color: 'var(--accent-gold)' }}>
+          <span className="eyebrow hero-eyebrow" style={{ color: 'var(--accent-gold)' }}>
             EXPLORE THE WORLD
           </span>
           <h1 className="hero-title">
-            Hello!<br />
-            Do you want to travel?
+            HELLO!<br />
+            DO YOU WANT TO<br />
+            TRAVEL?
           </h1>
           <p className="hero-subtitle">
-            Create personalized multi-city trips, discover amazing destinations, build your itinerary, and keep your entire journey within budget.
+            Create personalized multi-city trips, discover destinations, build your itinerary and manage your travel budget.
           </p>
           <div className="hero-ctas">
-            <button className="btn btn-primary" onClick={onPlanTripClick} id="hero-cta-plan">
-              Plan a Trip <ArrowRight size={18} />
+            <button className="btn btn-hero-primary" onClick={onPlanTripClick} id="hero-cta-plan">
+              PLAN A TRIP &rarr;
             </button>
-            <button className="btn btn-glass" onClick={onExploreClick} id="hero-cta-explore">
-              <Compass size={18} /> Explore Destinations
+            <button className="btn btn-hero-secondary" onClick={onExploreClick} id="hero-cta-explore">
+              EXPLORE DESTINATIONS
             </button>
           </div>
         </div>
       </div>
 
-      <div className="scroll-indicator">
-        <span>Scroll</span>
-        <svg width="12" height="24" viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 1V23M6 23L1 18M6 23L11 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+      {/* Slider Indicator Dots */}
+      <div className="hero-slider-dots">
+        <span className="dot active"></span>
+        <span className="dot"></span>
+        <span className="dot"></span>
+        <span className="dot"></span>
       </div>
     </header>
   );

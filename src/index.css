@@ -1084,3 +1084,702 @@ button, input, select, textarea {
   border: 1.5px solid rgba(250, 248, 242, 0.15);
   font-weight: 700;
 }
+
+/* ==========================================
+   WONDERLAND OVERRIDES & NEW COMPONENTS
+   ========================================== */
+
+/* Navbar Brand & Actions */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.nav-brand-icon {
+  width: 24px;
+  height: 24px;
+  color: #FAF8F2;
+  transition: var(--transition-normal);
+}
+
+.navbar-wrapper.scrolled .nav-brand-icon {
+  color: var(--text-primary);
+}
+
+.nav-brand-text {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #FAF8F2;
+}
+
+.navbar-wrapper.scrolled .nav-brand-text {
+  color: var(--text-primary);
+}
+
+.nav-arrow {
+  transition: transform 0.2s ease;
+}
+
+.nav-item:hover .nav-arrow {
+  transform: translateY(2px);
+}
+
+/* Custom Theme Toggle Slider */
+.theme-toggle-slider {
+  width: 44px;
+  height: 22px;
+  background-color: rgba(250, 248, 242, 0.2);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  border: 1px solid rgba(250, 248, 242, 0.4);
+}
+
+.navbar-wrapper.scrolled .theme-toggle-slider {
+  background-color: rgba(44, 41, 37, 0.1);
+  border-color: rgba(44, 41, 37, 0.2);
+}
+
+.theme-toggle-slider.active {
+  background-color: var(--accent-olive);
+}
+
+.toggle-slider-knob {
+  width: 16px;
+  height: 16px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.theme-toggle-slider.active .toggle-slider-knob {
+  transform: translateX(22px);
+  color: var(--accent-olive);
+}
+
+.btn-navbar-action {
+  background-color: #FAF8F2;
+  color: var(--text-primary);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.navbar-wrapper.scrolled .btn-navbar-action {
+  background-color: var(--accent-olive);
+  color: #FFFFFF;
+}
+
+.btn-navbar-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Hero Section Updates */
+.hero-wrapper {
+  height: 85vh;
+  min-height: 600px;
+}
+
+.hero-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.hero-content {
+  max-width: 580px;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  color: rgba(250, 248, 242, 0.7);
+  letter-spacing: 2px;
+  margin-bottom: var(--space-xs);
+}
+
+.hero-title {
+  font-size: 72px;
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+  color: #FFFFFF;
+}
+
+.hero-subtitle {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(250, 248, 242, 0.85);
+  margin-bottom: 0;
+  max-width: 480px;
+}
+
+.hero-slider-dots {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
+
+.hero-slider-dots .dot {
+  width: 6px;
+  height: 6px;
+  background-color: rgba(250, 248, 242, 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.hero-slider-dots .dot.active {
+  background-color: #FFFFFF;
+  transform: scale(1.3);
+}
+
+/* Travel Search Pill Overlap */
+.search-section {
+  margin-top: -45px;
+  padding-bottom: 60px;
+}
+
+.search-bar-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(44, 41, 37, 0.08);
+  border-radius: 999px; /* Pill shape! */
+  padding: 10px 14px 10px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 35px rgba(44, 41, 37, 0.06);
+  min-height: 68px;
+  gap: 16px;
+}
+
+.tour-name-field {
+  flex: 1.5;
+}
+
+.date-range-field {
+  flex: 1.2;
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  flex-direction: row; /* Horizontal input row */
+  gap: 10px;
+  border-right: none;
+  padding-right: 0;
+}
+
+.search-icon {
+  color: #8C8476;
+}
+
+.search-input {
+  width: 100%;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #A59E92;
+}
+
+.search-divider-vertical {
+  width: 1px;
+  height: 28px;
+  background-color: rgba(44, 41, 37, 0.1);
+}
+
+.search-submit-btn {
+  height: 48px;
+  padding: 0 32px;
+  border-radius: 999px; /* Pill button! */
+  background-color: var(--accent-olive);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-submit-btn:hover {
+  background-color: var(--accent-olive-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(89, 96, 74, 0.2);
+}
+
+/* Special For You / Tour Carousel */
+.regions-section {
+  padding: 60px 0;
+}
+
+.regions-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+
+.regions-header .section-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 0;
+}
+
+.view-all-tours-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: lowercase;
+  border-bottom: 1.5px solid currentColor;
+  padding-bottom: 2px;
+}
+
+.view-all-tours-link:hover {
+  color: var(--text-primary);
+}
+
+.regions-carousel-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+.carousel-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(44, 41, 37, 0.1);
+  background-color: #FFFFFF;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.carousel-nav-btn:hover {
+  background-color: var(--bg-surface);
+  border-color: rgba(44, 41, 37, 0.2);
+  transform: scale(1.05);
+}
+
+.regions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  flex: 1;
+}
+
+.dest-card {
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid rgba(44, 41, 37, 0.05);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  transition: var(--transition-normal);
+}
+
+.dest-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+}
+
+.dest-img-container {
+  position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+.dest-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-overlay-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.dest-info-container {
+  padding: 24px;
+}
+
+.dest-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.dest-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.dest-specs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #8C8476;
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spec-icon {
+  color: #B38A45;
+}
+
+.dest-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(44, 41, 37, 0.06);
+  padding-top: 16px;
+}
+
+.dest-price-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #A59E92;
+  letter-spacing: 0.5px;
+}
+
+.price-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--price-red);
+}
+
+.book-btn {
+  background-color: var(--accent-olive);
+  color: #FFFFFF;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.book-btn:hover {
+  background-color: var(--accent-olive-hover);
+  transform: translateY(-1px);
+}
+
+/* Statistics Section */
+.stats-section {
+  padding: 60px 0;
+  background-color: #FFFFFF;
+  border-top: 1px solid rgba(44, 41, 37, 0.05);
+  border-bottom: 1px solid rgba(44, 41, 37, 0.05);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.stats-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stats-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stats-sublabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.stats-divider {
+  width: 32px;
+  height: 2px;
+  background-color: var(--accent-gold);
+  margin-top: 12px;
+}
+
+/* Get To Know Section (Altai Mountains map/banner) */
+.get-to-know-section {
+  padding: 60px 0 80px 0;
+}
+
+.get-to-know-wrapper {
+  position: relative;
+  height: 520px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  color: #FFFFFF;
+}
+
+.get-to-know-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.get-to-know-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(30, 25, 20, 0.75) 0%, rgba(30, 25, 20, 0.2) 60%, rgba(30, 25, 20, 0.4) 100%);
+  z-index: 2;
+}
+
+.get-to-know-content {
+  position: relative;
+  z-index: 3;
+  padding: 48px;
+  max-width: 440px;
+}
+
+.get-to-know-title {
+  font-size: 44px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+
+.get-to-know-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 28px;
+}
+
+.visit-site-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 14px 28px;
+  border-radius: 999px;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 14px;
+  transition: var(--transition-normal);
+}
+
+.visit-site-btn:hover {
+  background-color: #FFFFFF;
+  color: var(--text-primary);
+  border-color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.visit-site-icon {
+  transition: transform 0.2s ease;
+}
+
+.visit-site-btn:hover .visit-site-icon {
+  transform: translate(2px, -2px);
+}
+
+/* Hotspots overlay */
+.hotspots-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+.map-hotspot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.hotspot-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 2;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+
+.hotspot-pulse {
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: pulse-ring 1.8s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+}
+
+.hotspot-tooltip {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background-color: rgba(30, 25, 20, 0.85);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.map-hotspot:hover .hotspot-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.65);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Responsiveness overrides */
+@media (max-width: 992px) {
+  .regions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-bar-card {
+    border-radius: 16px;
+    flex-direction: column;
+    padding: 20px;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .search-divider-vertical {
+    display: none;
+  }
+  .search-field {
+    border-bottom: 1px solid rgba(44, 41, 37, 0.1);
+    padding-bottom: 12px;
+  }
+  .regions-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .get-to-know-wrapper {
+    height: auto;
+    flex-direction: column;
+  }
+  .get-to-know-content {
+    padding: 32px 24px;
+  }
+  .hotspots-container {
+    display: none; /* Hide map hotspots on mobile */
+  }
+}

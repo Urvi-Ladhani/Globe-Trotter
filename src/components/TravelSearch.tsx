@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Search, Calendar, Briefcase } from 'lucide-react';
 
 interface TravelSearchProps {
   onSearch: (searchQuery: string, style: string, dates: { start: string; end: string }) => void;
@@ -28,65 +29,74 @@ export const TravelSearch: React.FC<TravelSearchProps> = ({ onSearch }) => {
     <section className="search-section container">
       <form onSubmit={handleSubmit} className="search-bar-card" id="travel-search-form">
         
-        {/* Destination */}
-        <div className="search-field">
-          <span className="search-label">Where to?</span>
-          <div className="search-input-wrapper">
+        {/* Destination Field */}
+        <div className="search-field tour-name-field">
+          <div className="search-field-header">
+            <Search size={14} className="search-icon" />
+            <span className="search-label">WHERE TO?</span>
+          </div>
+          <input 
+            type="text" 
+            placeholder="Search destinations"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            className="search-input-field"
+            id="search-dest-input"
+          />
+        </div>
+
+        <div className="search-divider-vertical"></div>
+
+        {/* Dates Field */}
+        <div className="search-field date-range-field">
+          <div className="search-field-header">
+            <Calendar size={14} className="search-icon" />
+            <span className="search-label">TRAVEL DATES</span>
+          </div>
+          <div className="search-date-inputs">
             <input 
-              type="text" 
-              placeholder="Search destinations (e.g. Paris, Tokyo...)"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              id="search-dest-input"
+              type="date" 
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="search-input-date"
+              aria-label="Start date"
+            />
+            <span className="date-arrow">&rarr;</span>
+            <input 
+              type="date" 
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="search-input-date"
+              aria-label="End date"
             />
           </div>
         </div>
 
-        {/* Dates */}
-        <div className="search-field">
-          <span className="search-label">Travel dates</span>
-          <div className="search-input-wrapper">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-              <input 
-                type="date" 
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                style={{ fontSize: '13px' }}
-                aria-label="Start date"
-              />
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>→</span>
-              <input 
-                type="date" 
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                style={{ fontSize: '13px' }}
-                aria-label="End date"
-              />
-            </div>
+        <div className="search-divider-vertical"></div>
+
+        {/* Travel Style Field */}
+        <div className="search-field style-field">
+          <div className="search-field-header">
+            <Briefcase size={14} className="search-icon" />
+            <span className="search-label">TRAVEL STYLE</span>
           </div>
+          <select 
+            value={travelStyle}
+            onChange={(e) => setTravelStyle(e.target.value)}
+            className="search-select-field"
+            id="search-style-select"
+          >
+            {travelStyles.map((style) => (
+              <option key={style.value} value={style.value}>
+                {style.label}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Travel Style */}
-        <div className="search-field">
-          <span className="search-label">Travel style</span>
-          <div className="search-input-wrapper">
-            <select 
-              value={travelStyle}
-              onChange={(e) => setTravelStyle(e.target.value)}
-              id="search-style-select"
-            >
-              {travelStyles.map((style) => (
-                <option key={style.value} value={style.value}>
-                  {style.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Submit Button */}
+        {/* Submit Explore Button */}
         <button type="submit" className="search-submit-btn" id="search-explore-btn">
-          <span>Explore</span>
+          EXPLORE
         </button>
 
       </form>

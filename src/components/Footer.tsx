@@ -3,28 +3,34 @@ import React from 'react';
 export const Footer: React.FC = () => {
   return (
     <footer className="footer-wrapper">
-      <div className="container">
+      <div className="container footer-container">
         
         {/* Footer Top Grid */}
         <div className="footer-grid">
           <div className="footer-info">
             <span className="footer-logo">GlobeTrotter</span>
+            <p className="footer-tagline">
+              Your modern travel companion for planning multi-city itineraries, mapping stops, and managing budgets.
+            </p>
           </div>
 
-          <ul className="footer-links">
-            <li><a href="#explore" onClick={(e) => { e.preventDefault(); document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth' }); }}>Explore</a></li>
-            <li><a href="#trips" onClick={(e) => { e.preventDefault(); document.getElementById('trips')?.scrollIntoView({ behavior: 'smooth' }); }}>My Trips</a></li>
-            <li><a href="#about" onClick={(e) => { e.preventDefault(); alert("GlobeTrotter is a premium multi-city travel planning platform designed to make itinerary building, destination exploring, and budgeting seamless."); }}>About</a></li>
-            <li><a href="#contact" onClick={(e) => { e.preventDefault(); alert("Contact us at support@globetrotter.io"); }}>Contact</a></li>
-          </ul>
+          <div className="footer-links-column">
+            <h4 className="footer-column-title">Explore</h4>
+            <ul className="footer-links-list">
+              <li><a href="#explore">Destinations</a></li>
+              <li><a href="#trips">Travel Plans</a></li>
+              <li><a href="#about">About Us</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div>
         </div>
 
         {/* Footer Bottom */}
         <div className="footer-bottom">
-          <p>© 2026 GlobeTrotter</p>
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <a href="#privacy" onClick={(e) => e.preventDefault()}>Privacy</a>
-            <a href="#terms" onClick={(e) => e.preventDefault()}>Terms</a>
+          <p className="footer-copyright">© 2026 GlobeTrotter. All rights reserved.</p>
+          <div className="footer-legal-links">
+            <a href="#privacy" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
+            <a href="#terms" onClick={(e) => e.preventDefault()}>Terms of Service</a>
           </div>
         </div>
 

@@ -20,7 +20,7 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [estimatedCost, setEstimatedCost] = useState('');
-  const [progress, setProgress] = useState(10);
+  const [progress, setProgress] = useState(15);
   const [style, setStyle] = useState('Adventure');
 
   // Load existing trip data if in edit / continue mode
@@ -30,13 +30,8 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
       setRouteText(editingTrip.route.join(' → '));
       setEstimatedCost(editingTrip.estimatedCost);
       setProgress(editingTrip.progress);
-      // Try to parse dates or just leave blank/defaults
-      const datesParts = editingTrip.dates.split(' — ');
-      if (datesParts.length === 2) {
-        // e.g. "12 Sep"
-        setStartDate('');
-        setEndDate('');
-      }
+      setStartDate('');
+      setEndDate('');
     } else {
       // Clear fields
       setName('');
@@ -56,7 +51,6 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
       return;
     }
 
-    // Split route by arrow or commas
     const route = routeText
       .split(/[→,]/)
       .map(city => city.trim())
@@ -93,22 +87,23 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
         {/* Header */}
         <div className="drawer-header">
           <h3 className="drawer-title">
-            {editingTrip ? 'Edit Itinerary' : 'Plan a New Journey'}
+            {editingTrip ? 'Edit Itinerary Details' : 'Plan a New Journey'}
           </h3>
           <button className="drawer-close-btn" onClick={onClose} aria-label="Close itinerary planner">
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="drawer-body">
+        <form onSubmit={handleSubmit} className="drawer-form-container">
+          
           {/* Trip Name */}
           <div className="form-group">
             <label htmlFor="drawer-trip-name">Trip Name</label>
             <input 
               id="drawer-trip-name"
               type="text" 
-              placeholder="e.g. European Escapade, Tokyo Express"
+              placeholder="e.g. Europe Escape, Asian Odyssey"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -120,14 +115,14 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
             <label htmlFor="drawer-route">Route Stop Sequence</label>
             <textarea 
               id="drawer-route"
-              placeholder="Separate stops with arrows or commas. e.g. Paris, Rome, Venice"
+              placeholder="e.g. Paris, Rome, Venice"
               value={routeText}
               onChange={(e) => setRouteText(e.target.value)}
               rows={3}
               required
             />
-            <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-              Example format: Paris → Rome → Venice
+            <span className="form-helper-text">
+              Separate stops with arrows or commas. Example: Paris → Rome → Venice
             </span>
           </div>
 
@@ -166,7 +161,7 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
               />
             </div>
             <div className="form-group">
-              <label htmlFor="drawer-style">Style</label>
+              <label htmlFor="drawer-style">Travel Style</label>
               <select 
                 id="drawer-style"
                 value={style}
@@ -181,9 +176,9 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
             </div>
           </div>
 
-          {/* Progress Slider (Only for mock editing) */}
+          {/* Progress Slider */}
           <div className="form-group">
-            <label htmlFor="drawer-progress">Itinerary Planning Progress ({progress}%)</label>
+            <label htmlFor="drawer-progress">Itinerary Progress ({progress}%)</label>
             <input 
               id="drawer-progress"
               type="range" 
@@ -191,15 +186,16 @@ export const PlanTripDrawer: React.FC<PlanTripDrawerProps> = ({
               max="100" 
               value={progress}
               onChange={(e) => setProgress(Number(e.target.value))}
-              style={{ accentColor: 'var(--accent-brown)' }}
+              className="progress-range-slider"
             />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px' }}>
-            <button type="submit" className="drawer-primary-btn" id="drawer-save-btn">
+          {/* Form Actions */}
+          <div className="drawer-actions">
+            <button type="submit" className="btn btn-form-submit" id="drawer-save-btn">
               {editingTrip ? 'Update Plan' : 'Generate Itinerary'}
             </button>
-            <button type="button" className="drawer-cancel-btn" onClick={onClose}>
+            <button type="button" className="btn btn-form-cancel" onClick={onClose}>
               Cancel
             </button>
           </div>

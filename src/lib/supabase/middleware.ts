@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/env";
 
-const publicExact = new Set(["/login", "/register", "/forgot-password"]);
+const publicExact = new Set(["/", "/login", "/register", "/forgot-password"]);
 
 function isPublicPath(pathname: string) {
   if (publicExact.has(pathname)) return true;

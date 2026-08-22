@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Plus, ArrowRight } from 'lucide-react';
+import { MapPin, Plus, ArrowRight, Calendar, Bookmark } from 'lucide-react';
 
 export interface Trip {
   id: string;
@@ -16,8 +16,8 @@ interface PreviousTripsProps {
   trips: Trip[];
   onContinueTrip: (trip: Trip) => void;
   onPlanTripClick: () => void;
-  onClearAll?: () => void; // Provided for testing empty state
-  onRestoreAll?: () => void; // Provided for testing empty state
+  onClearAll?: () => void;
+  onRestoreAll?: () => void;
 }
 
 export const TripCard: React.FC<{ trip: Trip; onContinue: () => void }> = ({ trip, onContinue }) => {
@@ -30,57 +30,50 @@ export const TripCard: React.FC<{ trip: Trip; onContinue: () => void }> = ({ tri
           className="trip-img"
           loading="lazy"
         />
-        <span className="trip-badge">In Progress</span>
+        <div className="trip-card-overlay"></div>
+        <span className="trip-card-badge">IN PROGRESS</span>
       </div>
       
       <div className="trip-card-content">
-        <div className="trip-title-row">
-          <h3 className="trip-title">{trip.name}</h3>
-          <span className="trip-dates">
-            {trip.dates}
-          </span>
+        <div className="trip-header-row">
+          <h3 className="trip-card-title">{trip.name}</h3>
+          <span className="trip-card-dates">{trip.dates}</span>
         </div>
 
-        {/* Route Node Chain */}
-        <div style={{ 
-          fontFamily: 'var(--font-sans)', 
-          fontSize: '13px', 
-          fontWeight: 600, 
-          color: 'var(--accent-brown)', 
-          marginBottom: '16px' 
-        }}>
-          {trip.route.join(' · ')}
+        {/* Route Chain */}
+        <div className="trip-route-chain">
+          {trip.route.join(' • ')}
         </div>
 
-        {/* Info Grid */}
-        <div className="trip-details-row">
-          <div className="detail-item">
-            <span className="detail-label">Destinations</span>
-            <span className="detail-value">{trip.destinationsCount} stops</span>
+        {/* Info row */}
+        <div className="trip-info-row">
+          <div className="trip-info-item">
+            <span className="trip-info-label">DESTINATIONS</span>
+            <span className="trip-info-value">{trip.destinationsCount} stops</span>
           </div>
-          <div className="detail-item">
-            <span className="detail-label">Est. Budget</span>
-            <span className="detail-value">{trip.estimatedCost}</span>
+          <div className="trip-info-item">
+            <span className="trip-info-label">EST. BUDGET</span>
+            <span className="trip-info-value">{trip.estimatedCost}</span>
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="progress-section">
-          <div className="progress-header">
-            <span style={{ color: 'var(--text-secondary)' }}>Itinerary Completion</span>
-            <span className="progress-pct">{trip.progress}% planned</span>
+        {/* Progress bar */}
+        <div className="trip-progress-section">
+          <div className="trip-progress-header">
+            <span className="trip-progress-label">ITINERARY PLANNING</span>
+            <span className="trip-progress-pct">{trip.progress}%</span>
           </div>
-          <div className="progress-bar-bg">
+          <div className="trip-progress-bar-bg">
             <div 
-              className="progress-bar-fill" 
+              className="trip-progress-bar-fill" 
               style={{ width: `${trip.progress}%` }}
             ></div>
           </div>
         </div>
 
-        <div className="trip-actions">
-          <button className="btn btn-secondary btn-continue" onClick={onContinue} id={`btn-continue-${trip.id}`}>
-            Continue →
+        <div className="trip-card-actions">
+          <button className="btn-trip-continue" onClick={onContinue} id={`btn-continue-${trip.id}`}>
+            CONTINUE &rarr;
           </button>
         </div>
       </div>
@@ -100,33 +93,30 @@ export const PreviousTrips: React.FC<PreviousTripsProps> = ({
       <div className="container">
         
         {/* Header */}
-        <div className="trips-header">
-          <div className="trips-header-left">
-            <span className="eyebrow">Previous Trips</span>
+        <div className="trips-header-row">
+          <div>
+            <span className="eyebrow" style={{ color: 'var(--accent-gold)' }}>PREVIOUS TRIPS</span>
             <h2 className="section-title">Your Travel Plans</h2>
-            <p className="section-desc">
-              Continue planning your next adventure or review past trips.
-            </p>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="trips-header-actions">
             {trips.length > 0 ? (
               <>
                 <button 
                   onClick={onClearAll} 
-                  style={{ fontSize: '13px', color: 'var(--text-secondary)', cursor: 'pointer', opacity: 0.7 }}
+                  className="btn-clear-state-test"
                   title="Simulate empty state"
                 >
-                  Clear Trips (Test Empty State)
+                  Clear (Test Empty State)
                 </button>
-                <a href="#view-all" className="view-all-link" onClick={(e) => { e.preventDefault(); alert("Viewing all saved trips..."); }}>
-                  View All Trips <ArrowRight size={14} />
+                <a href="#" className="view-all-link" onClick={(e) => { e.preventDefault(); alert("Viewing all saved trips..."); }}>
+                  View All Trips &rarr;
                 </a>
               </>
             ) : (
               <button 
                 onClick={onRestoreAll} 
-                style={{ fontSize: '13px', color: 'var(--accent-brown)', cursor: 'pointer', fontWeight: 500 }}
+                className="btn-restore-state-test"
               >
                 Restore Mock Trips
               </button>
@@ -136,7 +126,7 @@ export const PreviousTrips: React.FC<PreviousTripsProps> = ({
 
         {/* Trips Display */}
         {trips.length > 0 ? (
-          <div className="trips-grid">
+          <div className="trips-grid-two">
             {trips.map((trip) => (
               <TripCard 
                 key={trip.id} 
@@ -149,14 +139,14 @@ export const PreviousTrips: React.FC<PreviousTripsProps> = ({
           /* Empty State */
           <div className="empty-trips-card" id="trips-empty-state">
             <div className="empty-icon-wrapper">
-              <MapPin size={28} />
+              <MapPin size={24} />
             </div>
-            <h3 className="empty-title">Your next adventure starts here.</h3>
+            <h3 className="empty-title">Your next adventure starts here</h3>
             <p className="empty-desc">
               You haven't customized any multi-city itineraries yet. Plan your route, map your stops, and manage your budget in one beautiful place.
             </p>
-            <button className="btn btn-primary" onClick={onPlanTripClick} id="btn-empty-plan">
-              <Plus size={18} /> Plan Your First Trip
+            <button className="btn btn-empty-cta" onClick={onPlanTripClick} id="btn-empty-plan">
+              <Plus size={16} /> Plan Your First Trip
             </button>
           </div>
         )}
