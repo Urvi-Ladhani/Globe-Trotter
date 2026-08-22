@@ -3,6 +3,7 @@ import { requireActiveUser } from "@/lib/auth";
 import { createTrip } from "@/lib/actions/trips";
 import { Nav } from "@/components/nav";
 import { ImageUploadInput } from "@/components/image-upload-input";
+import { DateRangePicker } from "@/components/date-range-picker";
 import { Lock, Link as LinkIcon, Globe, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -56,24 +57,11 @@ export default async function NewTripPage({
             />
           </label>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
-              Start Date
-              <input
-                type="date"
-                name="start_date"
-                className="pacific-input"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
-              End Date
-              <input
-                type="date"
-                name="end_date"
-                className="pacific-input"
-              />
-            </label>
-          </div>
+          <DateRangePicker
+            label="Trip Dates (Departure & Return)"
+            startName="start_date"
+            endName="end_date"
+          />
 
           <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
             Estimated Budget (INR)
