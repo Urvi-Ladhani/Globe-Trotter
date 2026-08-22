@@ -190,7 +190,7 @@ export default async function TripsPage() {
 
         {(!ownTrips?.length && !sharedTrips?.length) ? (
           <div className="mt-12 rounded-lg border border-dashed p-10 text-center">
-            <p className="text-zinc-500">You haven't planned any trips yet.</p>
+            <p className="text-zinc-500">You havent planned any trips yet.</p>
             <Link
               href="/trips/new"
               className="mt-3 inline-block rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
