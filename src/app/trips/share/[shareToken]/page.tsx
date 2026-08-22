@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { Tables } from "@/lib/database.types";
 
 export const dynamic = "force-dynamic";
+
+type TripActivityRow = Tables<"trip_activities">;
 
 export default async function PublicTripSharePage({
   params,
@@ -58,9 +61,10 @@ export default async function PublicTripSharePage({
     : { data: [] };
   const activityById = new Map((activities ?? []).map((a) => [a.activity_id, a]));
 
-  const activitiesByStop: Record<string, NonNullable<typeof tripActivities>> = {};
-  for (const ta of tripActivities ?? []) {
-    (activitiesByStop[ta.stop_id] ??= []).push(ta);
+  const activitiesByStop: Record<string, TripActivityRow[]> = {};
+  for (const ta of (tripActivities ?? []) as TripActivityRow[]) {
+    if (!activitiesByStop[ta.stop_id]) activitiesByStop[ta.stop_id] = [];
+    activitiesByStop[ta.stop_id].push(ta);
   }
 
   return (
@@ -105,9 +109,10 @@ export default async function PublicTripSharePage({
               const city = cityMap.get(stop.city_id);
               const stopActs = activitiesByStop[stop.stop_id] ?? [];
 
-              const dayGroups: Record<number, typeof stopActs> = {};
+              const dayGroups: Record<number, TripActivityRow[]> = {};
               for (const act of stopActs) {
-                (dayGroups[act.day_number] ??= []).push(act);
+                if (!dayGroups[act.day_number]) dayGroups[act.day_number] = [];
+                dayGroups[act.day_number].push(act);
               }
               const sortedDays = Object.keys(dayGroups).map(Number).sort((a, b) => a - b);
 

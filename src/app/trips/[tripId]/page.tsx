@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireActiveUser } from "@/lib/auth";
+import type { Tables } from "@/lib/database.types";
 import { Nav } from "@/components/nav";
 import { toggleTripSharing, inviteCollaborator, removeCollaborator, updateTrip } from "@/lib/actions/trips";
 
 export const dynamic = "force-dynamic";
+
+type TripActivityRow = Tables<"trip_activities">;
 
 export default async function TripDetailPage({
   params,
@@ -66,9 +69,10 @@ export default async function TripDetailPage({
   const activityById = new Map((activities ?? []).map((a) => [a.activity_id, a]));
 
   // Group activities per stop
-  const activitiesByStop: Record<string, NonNullable<typeof tripActivities>> = {};
-  for (const ta of tripActivities ?? []) {
-    (activitiesByStop[ta.stop_id] ??= []).push(ta);
+  const activitiesByStop: Record<string, TripActivityRow[]> = {};
+  for (const ta of (tripActivities ?? []) as TripActivityRow[]) {
+    if (!activitiesByStop[ta.stop_id]) activitiesByStop[ta.stop_id] = [];
+    activitiesByStop[ta.stop_id].push(ta);
   }
 
   // Fetch collaborators
@@ -172,9 +176,10 @@ export default async function TripDetailPage({
                 const stopActs = activitiesByStop[stop.stop_id] ?? [];
                 
                 // Group activities by day_number
-                const dayGroups: Record<number, typeof stopActs> = {};
+                const dayGroups: Record<number, TripActivityRow[]> = {};
                 for (const act of stopActs) {
-                  (dayGroups[act.day_number] ??= []).push(act);
+                  if (!dayGroups[act.day_number]) dayGroups[act.day_number] = [];
+                  dayGroups[act.day_number].push(act);
                 }
                 const sortedDays = Object.keys(dayGroups).map(Number).sort((a, b) => a - b);
 
