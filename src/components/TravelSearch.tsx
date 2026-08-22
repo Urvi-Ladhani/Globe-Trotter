@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Search, Calendar, MapPin, Tag } from 'lucide-react';
 
 interface TravelSearchProps {
   onSearch: (searchQuery: string, style: string, dates: { start: string; end: string }) => void;
@@ -27,13 +26,12 @@ export const TravelSearch: React.FC<TravelSearchProps> = ({ onSearch }) => {
 
   return (
     <section className="search-section container">
-      <form onSubmit={handleSubmit} className="glass-panel search-bar-card" id="travel-search-form">
+      <form onSubmit={handleSubmit} className="search-bar-card" id="travel-search-form">
         
         {/* Destination */}
         <div className="search-field">
-          <span className="search-label">Where do you want to go?</span>
+          <span className="search-label">Where to?</span>
           <div className="search-input-wrapper">
-            <MapPin size={18} className="search-input-icon" />
             <input 
               type="text" 
               placeholder="Search destinations (e.g. Paris, Tokyo...)"
@@ -48,7 +46,6 @@ export const TravelSearch: React.FC<TravelSearchProps> = ({ onSearch }) => {
         <div className="search-field">
           <span className="search-label">Travel dates</span>
           <div className="search-input-wrapper">
-            <Calendar size={18} className="search-input-icon" />
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
               <input 
                 type="date" 
@@ -73,7 +70,6 @@ export const TravelSearch: React.FC<TravelSearchProps> = ({ onSearch }) => {
         <div className="search-field">
           <span className="search-label">Travel style</span>
           <div className="search-input-wrapper">
-            <Tag size={18} className="search-input-icon" />
             <select 
               value={travelStyle}
               onChange={(e) => setTravelStyle(e.target.value)}
@@ -90,7 +86,6 @@ export const TravelSearch: React.FC<TravelSearchProps> = ({ onSearch }) => {
 
         {/* Submit Button */}
         <button type="submit" className="search-submit-btn" id="search-explore-btn">
-          <Search size={18} />
           <span>Explore</span>
         </button>
 

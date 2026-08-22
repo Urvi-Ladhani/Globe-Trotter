@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, Plus, ArrowRight } from 'lucide-react';
+import { MapPin, Plus, ArrowRight } from 'lucide-react';
 
 export interface Trip {
   id: string;
@@ -37,21 +37,19 @@ export const TripCard: React.FC<{ trip: Trip; onContinue: () => void }> = ({ tri
         <div className="trip-title-row">
           <h3 className="trip-title">{trip.name}</h3>
           <span className="trip-dates">
-            <Calendar size={13} style={{ color: 'var(--accent-brown)' }} />
             {trip.dates}
           </span>
         </div>
 
         {/* Route Node Chain */}
-        <div className="trip-route">
-          {trip.route.map((city, idx) => (
-            <React.Fragment key={city}>
-              <span className="route-node">{city}</span>
-              {idx < trip.route.length - 1 && (
-                <span className="route-arrow">→</span>
-              )}
-            </React.Fragment>
-          ))}
+        <div style={{ 
+          fontFamily: 'var(--font-sans)', 
+          fontSize: '13px', 
+          fontWeight: 600, 
+          color: 'var(--accent-brown)', 
+          marginBottom: '16px' 
+        }}>
+          {trip.route.join(' · ')}
         </div>
 
         {/* Info Grid */}
@@ -82,7 +80,7 @@ export const TripCard: React.FC<{ trip: Trip; onContinue: () => void }> = ({ tri
 
         <div className="trip-actions">
           <button className="btn btn-secondary btn-continue" onClick={onContinue} id={`btn-continue-${trip.id}`}>
-            Continue Trip
+            Continue →
           </button>
         </div>
       </div>

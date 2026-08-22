@@ -1,5 +1,4 @@
-import React from 'react';
-import { Star, MapPin } from 'lucide-react';
+import { MapPin, Calendar, Users } from 'lucide-react';
 
 export interface Destination {
   id: string;
@@ -33,29 +32,31 @@ export const DestinationCard: React.FC<{ destination: Destination; onClick: () =
       
       <div className="dest-info-overlay">
         <span className="dest-tag">{destination.tag}</span>
-        <h3 className="dest-title">{destination.city}</h3>
+        <h3 className="dest-title">{destination.city} — {destination.style} stop</h3>
+        
         <span className="dest-location">
-          <MapPin size={12} style={{ color: 'var(--accent-gold)' }} />
+          <MapPin size={10} style={{ color: 'var(--accent-gold)' }} />
           {destination.country}
         </span>
         
-        <p className="dest-desc">
-          {destination.description}
-        </p>
+        <div style={{ display: 'flex', gap: '10px', fontSize: '11px', color: 'var(--text-secondary)', margin: '4px 0 8px 0' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+            <Calendar size={11} /> 10 days
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+            <Users size={11} /> 2 people
+          </span>
+        </div>
         
         <div className="dest-footer">
           <div className="dest-meta">
-            <span className="dest-meta-label">Style / Cost</span>
-            <span className="dest-meta-value">{destination.style} • {destination.cost}</span>
+            <span className="dest-meta-label">Est. Cost</span>
+            <span className="dest-meta-value">{destination.cost}</span>
           </div>
           
-          <div className="dest-meta" style={{ alignItems: 'flex-end' }}>
-            <span className="dest-meta-label">Rating</span>
-            <span className="dest-meta-value" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-              <Star size={12} fill="currentColor" style={{ color: 'var(--accent-gold)' }} />
-              {destination.rating}
-            </span>
-          </div>
+          <button className="dest-btn" aria-label={`Explore ${destination.city}`}>
+            Explore
+          </button>
         </div>
       </div>
     </article>
@@ -65,12 +66,17 @@ export const DestinationCard: React.FC<{ destination: Destination; onClick: () =
 export const RegionalSelections: React.FC<RegionalSelectionsProps> = ({ destinations, onSelectDestination }) => {
   return (
     <section className="regions-section container" id="explore">
-      <div style={{ marginBottom: '32px' }}>
-        <span className="eyebrow">Top Regional Selections</span>
-        <h2 className="section-title">Popular Destinations</h2>
-        <p className="section-desc" style={{ marginBottom: 0 }}>
-          Hand-picked curated destinations for your next multi-city journey.
-        </p>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <div>
+          <span className="eyebrow">Top Regional Selections</span>
+          <h2 className="section-title">Popular Destinations</h2>
+          <p className="section-desc" style={{ marginBottom: 0 }}>
+            Hand-picked curated destinations for your next multi-city journey.
+          </p>
+        </div>
+        <a href="#all-destinations" className="view-all-link" onClick={(e) => { e.preventDefault(); alert("Exploring all regional selections..."); }}>
+          View all →
+        </a>
       </div>
 
       {destinations.length > 0 ? (

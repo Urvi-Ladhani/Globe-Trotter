@@ -11,7 +11,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onPlanTripClick, onExp
     <header className="hero-wrapper">
       {/* Immersive background image (Mount Bromo / Earthy premium travel feel) */}
       <img 
-        src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=1920&q=80" 
+        src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80" 
         alt="Dramatic mountain landscape at sunrise" 
         className="hero-bg"
       />
@@ -23,8 +23,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onPlanTripClick, onExp
             EXPLORE THE WORLD
           </span>
           <h1 className="hero-title">
-            Plan your journey.<br />
-            <span>Live the adventure.</span>
+            Hello!<br />
+            Do you want to travel?
           </h1>
           <p className="hero-subtitle">
             Create personalized multi-city trips, discover amazing destinations, build your itinerary, and keep your entire journey within budget.

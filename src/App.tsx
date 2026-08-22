@@ -22,7 +22,7 @@ const INITIAL_DESTINATIONS: Destination[] = [
     tag: 'Culture / Romance',
     description: 'Explore the iconic Eiffel Tower, Louvre Museum, and enjoy world-class French pastries along the Seine river.',
     rating: 4.8,
-    cost: '$$$',
+    cost: '₹45,000',
     style: 'Luxury'
   },
   {
@@ -33,7 +33,7 @@ const INITIAL_DESTINATIONS: Destination[] = [
     tag: 'Tech / Food',
     description: 'Immerse yourself in neon alleys, visit historic Shinto shrines, and taste fresh sushi at Tokyo Fish Markets.',
     rating: 4.9,
-    cost: '$$',
+    cost: '₹62,000',
     style: 'Food'
   },
   {
@@ -44,7 +44,7 @@ const INITIAL_DESTINATIONS: Destination[] = [
     tag: 'Adventure / Beach',
     description: 'Relax in gorgeous volcanic highlands, walk through ancient Ubud temples, and surf in clear ocean waters.',
     rating: 4.7,
-    cost: '$',
+    cost: '₹24,500',
     style: 'Adventure'
   },
   {
@@ -55,7 +55,7 @@ const INITIAL_DESTINATIONS: Destination[] = [
     tag: 'Modern / Luxury',
     description: 'Marvel at Burj Khalifa, ski indoors at the Mall of the Emirates, and ride dunes during an evening desert safari.',
     rating: 4.6,
-    cost: '$$$',
+    cost: '₹55,000',
     style: 'Luxury'
   },
   {
@@ -66,7 +66,7 @@ const INITIAL_DESTINATIONS: Destination[] = [
     tag: 'Ancient / History',
     description: 'Walk inside the ancient Colosseum, make a wish at the Trevi Fountain, and indulge in Rome’s authentic carbonara.',
     rating: 4.8,
-    cost: '$$',
+    cost: '₹38,000',
     style: 'Culture'
   }
 ];
@@ -307,11 +307,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <Footer 
-        onSubscribe={(email) => {
-          showToast(`Thank you! "${email}" has been registered for the GlobeTrotter newsletter.`);
-        }} 
-      />
+      <Footer />
 
       {/* Interactive planning drawer panel */}
       <PlanTripDrawer 
