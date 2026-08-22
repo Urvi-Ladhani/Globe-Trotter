@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { loginAction } from "@/lib/actions/auth";
 import { GoogleAuthButton } from "@/components/google-auth-button";
+import { Compass } from "lucide-react";
 
 export default async function LoginPage({
   searchParams,
@@ -17,7 +18,7 @@ export default async function LoginPage({
         {/* Brand Header */}
         <div className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900 mb-6">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF5A5F] text-white shadow-xs">
-            ✈
+            <Compass className="h-5 w-5" />
           </span>
           <span>Globe<span className="text-[#0891B2]">Trotter</span></span>
         </div>

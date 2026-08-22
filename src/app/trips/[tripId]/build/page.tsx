@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireActiveUser } from "@/lib/auth";
 import { Nav } from "@/components/nav";
 import { addStop, updateStop, deleteStop, addTripActivity, deleteTripActivity } from "@/lib/actions/trips";
+import { Clock, Plus, Trash2, ArrowLeft, Calendar } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -290,7 +291,11 @@ export default async function BuildPage({
                                   <p className="font-bold text-slate-900">{name}</p>
                                   <p className="text-slate-500 text-[11px]">
                                     {catalogAct?.category ?? "Custom"}
-                                    {ta.scheduled_time ? ` · ⏰ ${ta.scheduled_time}` : ""}
+                                    {ta.scheduled_time ? (
+                                      <span className="inline-flex items-center gap-0.5">
+                                        {" "}· <Clock className="h-3 w-3 inline text-slate-400" /> {ta.scheduled_time}
+                                      </span>
+                                    ) : ""}
                                     {ta.planned_cost_inr ? ` · ₹${ta.planned_cost_inr.toLocaleString("en-IN")}` : ""}
                                     {ta.notes ? ` · Note: ${ta.notes}` : ""}
                                   </p>
