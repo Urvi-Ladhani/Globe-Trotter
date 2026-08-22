@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { logoutAction } from "@/lib/actions/auth";
 
 export function Nav({
@@ -8,6 +11,7 @@ export function Nav({
   profile?: { first_name: string; last_name: string; role: string; photo_url?: string | null } | null;
   isAdmin?: boolean;
 }) {
+  const pathname = usePathname();
   const name = profile ? `${profile.first_name} ${profile.last_name ?? ""}`.trim() : "Account";
   const links = [
     { href: "/trips", label: "Trips" },
@@ -35,7 +39,7 @@ export function Nav({
             <Link
               key={l.href}
               href={l.href}
-              className="rounded-md px-3 py-1.5 text-sky-100 transition-colors hover:bg-white/10 hover:text-white"
+              className={`rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white ${pathname === l.href || pathname.startsWith(`${l.href}/`) ? "bg-white/15 font-bold text-white" : "text-sky-100"}`}
             >
               {l.label}
             </Link>
@@ -44,7 +48,7 @@ export function Nav({
           {isAdmin ? (
             <Link
               href="/admin"
-              className="rounded-md bg-[#FF5A5F]/20 px-3 py-1.5 font-semibold text-[#FF8E92] hover:bg-[#FF5A5F]/30 hover:text-white"
+              className={`rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white ${pathname === "/admin" ? "bg-white/15 font-bold text-white" : "text-sky-100"}`}
             >
               Admin
             </Link>

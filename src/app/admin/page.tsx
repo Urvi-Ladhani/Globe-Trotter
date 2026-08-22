@@ -25,6 +25,8 @@ export default async function AdminPage({
 
   // 1. Analytics & Stats
   const { count: userCount } = await supabase.from("profiles").select("*", { count: "exact", head: true });
+  const { count: activeUserCount } = await supabase.from("profiles").select("id", { count: "exact", head: true }).eq("status", "active");
+  const { count: suspendedUserCount } = await supabase.from("profiles").select("id", { count: "exact", head: true }).eq("status", "suspended");
   const { count: tripCount } = await supabase.from("trips").select("*", { count: "exact", head: true });
   const { count: activityCount } = await supabase.from("activities").select("*", { count: "exact", head: true });
   const { count: pendingActCount } = await supabase
@@ -91,19 +93,8 @@ export default async function AdminPage({
         <button className="admin-filter-button" type="submit">Apply</button>
       </form>
       <nav className="admin-tabs" aria-label="Admin sections">
-        <a href="#users">Manage Users</a><Link href="/cities">Popular Cities</Link><Link href="/activities">Popular Activities</Link><a href="#analytics">User Trends and Analytics</a>
+        <a href="#users">Manage Users</a><Link href="/cities">Popular Cities</Link><Link href="/activities">Popular Activities</Link><a href="#user-trends">User Trends and Analytics</a>
       </nav>
-
-      {/* Header Banner */}
-      <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/40 to-transparent py-8 px-4">
-        <div className="mx-auto max-w-6xl">
-          <span className="rounded-full bg-[#FF5A5F]/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#FF5A5F]">
-            Admin Control Center
-          </span>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Platform Operations</h1>
-          <p className="mt-1 text-sm text-slate-600">Moderate submitted activities, manage users, review audit logs, and monitor platform metrics.</p>
-        </div>
-      </div>
 
       <main className="mx-auto w-full max-w-6xl px-4 py-8 space-y-10">
         {error ? <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">{error}</p> : null}
@@ -128,6 +119,23 @@ export default async function AdminPage({
             <p className="mt-2 text-3xl font-extrabold text-[#FF5A5F]">{pendingActCount ?? 0}</p>
           </div>
         </div>
+
+        <section id="user-trends" className="pacific-card overflow-hidden admin-section">
+          <div className="border-b border-teal-900/10 bg-slate-50/70 p-5">
+            <h2 className="text-base font-bold text-slate-900">User Trends and Analytics</h2>
+            <p className="mt-1 text-xs text-slate-600">Current account status across the platform.</p>
+          </div>
+          <div className="grid gap-5 p-5 sm:grid-cols-2">
+            <div>
+              <div className="mb-2 flex justify-between text-xs font-semibold text-slate-600"><span>Active users</span><span>{activeUserCount ?? 0}</span></div>
+              <div className="h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full bg-[#0891B2]" style={{ width: `${Math.min(((activeUserCount ?? 0) / Math.max(userCount ?? 0, 1)) * 100, 100)}%` }} /></div>
+            </div>
+            <div>
+              <div className="mb-2 flex justify-between text-xs font-semibold text-slate-600"><span>Suspended users</span><span>{suspendedUserCount ?? 0}</span></div>
+              <div className="h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full bg-[#FF5A5F]" style={{ width: `${Math.min(((suspendedUserCount ?? 0) / Math.max(userCount ?? 0, 1)) * 100, 100)}%` }} /></div>
+            </div>
+          </div>
+        </section>
 
         {/* Pending Activity Moderation Queue */}
         <section id="moderation" className="pacific-card overflow-hidden admin-section">
