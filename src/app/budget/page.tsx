@@ -41,43 +41,49 @@ export default async function GeneralBudgetPage() {
   const totalExpensesInr = (allExpenses ?? []).reduce((acc, e) => acc + (e.amount_inr || 0), 0);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#FDFBF7]">
       <Nav profile={profile} isAdmin={profile?.role === "admin"} />
-      <main className="mx-auto w-full max-w-5xl px-4 py-8">
-        <div>
-          <h1 className="text-2xl font-bold">Trip Budgets Overview</h1>
-          <p className="text-sm text-zinc-500">
-            Track expenses across all your trips in <span className="font-semibold text-zinc-800">{currencyCode}</span>.
-          </p>
-        </div>
 
-        {/* Global Summary */}
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-zinc-500">Total Planned Budget</p>
-            <p className="mt-2 text-2xl font-bold text-zinc-900">
+      {/* Header */}
+      <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/40 to-transparent py-6 px-4">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Trip Budgets Overview</h1>
+            <p className="mt-1 text-sm text-slate-600">
+              Track and convert expenses across all trips in <span className="font-bold text-[#0891B2]">{currencyCode}</span>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <main className="mx-auto w-full max-w-5xl px-4 py-8 space-y-8">
+        {/* Global Summary Cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="pacific-card p-5">
+            <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Total Planned Budget</p>
+            <p className="mt-2 text-2xl font-extrabold text-slate-900">
               {formatMoney(convertFromInr(totalBudgetInr, rateToInr), currencyCode)}
             </p>
           </div>
-          <div className="rounded-lg border bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-zinc-500">Total Logged Expenses</p>
-            <p className="mt-2 text-2xl font-bold text-zinc-900">
+          <div className="pacific-card p-5">
+            <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Total Logged Expenses</p>
+            <p className="mt-2 text-2xl font-extrabold text-slate-900">
               {formatMoney(convertFromInr(totalExpensesInr, rateToInr), currencyCode)}
             </p>
           </div>
-          <div className="rounded-lg border bg-white p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase text-zinc-500">Remaining Budget</p>
-            <p className={`mt-2 text-2xl font-bold ${totalBudgetInr - totalExpensesInr >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+          <div className="pacific-card p-5">
+            <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Remaining Balance</p>
+            <p className={`mt-2 text-2xl font-extrabold ${totalBudgetInr - totalExpensesInr >= 0 ? "text-emerald-700" : "text-red-600"}`}>
               {formatMoney(convertFromInr(totalBudgetInr - totalExpensesInr, rateToInr), currencyCode)}
             </p>
           </div>
         </div>
 
         {/* Trips Budget List */}
-        <div className="mt-8 space-y-4">
-          <h2 className="text-lg font-semibold">Trips Breakdown</h2>
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-900">Trips Breakdown</h2>
           {(trips ?? []).length === 0 ? (
-            <p className="rounded-lg border bg-white p-6 text-sm text-zinc-500">No trips found.</p>
+            <div className="pacific-card p-8 text-center text-sm text-slate-500">No trips found.</div>
           ) : (
             (trips ?? []).map((t) => {
               const spentInr = expensesByTrip[t.trip_id] || 0;
@@ -87,26 +93,26 @@ export default async function GeneralBudgetPage() {
               const percentage = budgetInr > 0 ? Math.min((spentInr / budgetInr) * 100, 100) : 0;
 
               return (
-                <div key={t.trip_id} className="flex flex-col justify-between rounded-lg border bg-white p-5 shadow-sm sm:flex-row sm:items-center gap-4">
+                <div key={t.trip_id} className="pacific-card p-5 flex flex-col justify-between sm:flex-row sm:items-center gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-lg">{t.name}</h3>
-                      <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs capitalize text-zinc-600">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="font-bold text-lg text-slate-900">{t.name}</h3>
+                      <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-bold capitalize text-[#0891B2] border border-sky-200">
                         {t.status}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-500 mt-1">
-                      {t.start_date ?? "TBD"} – {t.end_date ?? "TBD"}
+                    <p className="text-xs text-slate-500 font-medium mt-1">
+                      📅 {t.start_date ?? "TBD"} – {t.end_date ?? "TBD"}
                     </p>
 
                     <div className="mt-3 max-w-md">
-                      <div className="flex justify-between text-xs text-zinc-600 mb-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-600 mb-1">
                         <span>Spent: {formatMoney(spentConverted, currencyCode)}</span>
                         <span>Budget: {budgetInr ? formatMoney(budgetConverted, currencyCode) : "Not set"}</span>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+                      <div className="h-2.5 w-full rounded-full bg-slate-100 overflow-hidden">
                         <div
-                          className={`h-full ${percentage >= 90 ? "bg-red-500" : "bg-zinc-800"}`}
+                          className={`h-full transition-all ${percentage >= 90 ? "bg-red-500" : "bg-[#FF5A5F]"}`}
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -116,7 +122,7 @@ export default async function GeneralBudgetPage() {
                   <div>
                     <Link
                       href={`/trips/${t.trip_id}/budget`}
-                      className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-700 inline-block"
+                      className="btn-coral px-4 py-2 text-xs font-bold shadow-xs inline-block"
                     >
                       Manage Budget →
                     </Link>

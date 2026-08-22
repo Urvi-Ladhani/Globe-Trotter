@@ -17,35 +17,32 @@ export default async function CommunityPage({
   const { supabase, user, profile } = await requireActiveUser();
   const { error, success } = await searchParams;
 
-  // 1. Fetch community posts
+  // 1. Fetch posts ordered by newest
   const { data: posts } = await supabase
     .from("community_posts")
     .select("*")
-    .order("created_at", { ascending: false })
-    .limit(40);
+    .order("created_at", { ascending: false });
 
-  const postIds = (posts ?? []).map((p) => p.post_id);
-  const authorIds = Array.from(new Set((posts ?? []).map((p) => p.user_id)));
-
-  // 2. Fetch author profiles
-  const { data: authorProfiles } = authorIds.length
-    ? await supabase.from("profiles").select("id, first_name, last_name, photo_url").in("id", authorIds)
+  // 2. Fetch author profiles for all posts
+  const userIds = Array.from(new Set((posts ?? []).map((p) => p.user_id)));
+  const { data: authors } = userIds.length
+    ? await supabase.from("profiles").select("id, first_name, last_name, photo_url").in("id", userIds)
     : { data: [] };
-  const authorMap = new Map((authorProfiles ?? []).map((a) => [a.id, a]));
+  const authorMap = new Map((authors ?? []).map((a) => [a.id, a]));
 
-  // 3. Fetch likes for posts
-  const { data: allLikes } = postIds.length
+  // 3. Fetch likes for all posts
+  const postIds = (posts ?? []).map((p) => p.post_id);
+  const { data: likes } = postIds.length
     ? await supabase.from("post_likes").select("post_id, user_id").in("post_id", postIds)
     : { data: [] };
 
   const likesByPost: Record<string, string[]> = {};
-  for (const l of allLikes ?? []) {
-    if (!likesByPost[l.post_id]) likesByPost[l.post_id] = [];
-    likesByPost[l.post_id].push(l.user_id);
+  for (const l of likes ?? []) {
+    (likesByPost[l.post_id] ??= []).push(l.user_id);
   }
 
-  // 4. Fetch comments for posts
-  const { data: allComments } = postIds.length
+  // 4. Fetch comments for all posts
+  const { data: comments } = postIds.length
     ? await supabase
         .from("post_comments")
         .select("*")
@@ -53,32 +50,35 @@ export default async function CommunityPage({
         .order("created_at", { ascending: true })
     : { data: [] };
 
-  const commentUserIds = Array.from(new Set((allComments ?? []).map((c) => c.user_id)));
-  const { data: commentAuthorProfiles } = commentUserIds.length
-    ? await supabase.from("profiles").select("id, first_name, last_name").in("id", commentUserIds)
-    : { data: [] };
-  const commentAuthorMap = new Map((commentAuthorProfiles ?? []).map((a) => [a.id, a]));
-
   const commentsByPost: Record<string, CommentRow[]> = {};
-  for (const c of (allComments ?? []) as CommentRow[]) {
-    if (!commentsByPost[c.post_id]) commentsByPost[c.post_id] = [];
-    commentsByPost[c.post_id].push(c);
+  const commentAuthorIds: string[] = [];
+  for (const c of (comments ?? []) as CommentRow[]) {
+    (commentsByPost[c.post_id] ??= []).push(c);
+    commentAuthorIds.push(c.user_id);
   }
 
-  // 5. Fetch user's trips and approved activities for "create post" dropdown
+  // 5. Fetch authors for comments
+  const uniqueCommentAuthorIds = Array.from(new Set(commentAuthorIds));
+  const { data: commentAuthors } = uniqueCommentAuthorIds.length
+    ? await supabase.from("profiles").select("id, first_name, last_name, photo_url").in("id", uniqueCommentAuthorIds)
+    : { data: [] };
+  const commentAuthorMap = new Map((commentAuthors ?? []).map((a) => [a.id, a]));
+
+  // 6. User's trips for linking in post
   const { data: userTrips } = await supabase
     .from("trips")
     .select("trip_id, name")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .eq("user_id", user.id);
 
+  // 7. Popular activities for linking in post
   const { data: popularActivities } = await supabase
     .from("activities")
     .select("activity_id, name")
     .eq("is_approved", true)
-    .limit(20);
+    .order("popularity_score", { ascending: false })
+    .limit(10);
 
-  // 6. Linked trip & activity maps
+  // 8. Linked trip & activity maps
   const linkedTripIds = (posts ?? []).map((p) => p.trip_id).filter((id): id is string => !!id);
   const { data: linkedTrips } = linkedTripIds.length
     ? await supabase.from("trips").select("trip_id, name").in("trip_id", linkedTripIds)
@@ -92,31 +92,42 @@ export default async function CommunityPage({
   const actMap = new Map((linkedActs ?? []).map((a) => [a.activity_id, a]));
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#FDFBF7]">
       <Nav profile={profile} isAdmin={profile?.role === "admin"} />
-      <main className="mx-auto w-full max-w-3xl px-4 py-8">
-        <div>
-          <h1 className="text-2xl font-bold">Traveler Community</h1>
-          <p className="text-sm text-zinc-500">Share your travel memories, itinerary highlights, and advice with fellow explorers.</p>
-        </div>
 
-        {error ? <p className="mt-4 rounded bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
-        {success ? <p className="mt-4 rounded bg-emerald-50 p-3 text-sm text-emerald-700">{success}</p> : null}
+      {/* Header Banner */}
+      <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/40 to-transparent py-8 px-4">
+        <div className="mx-auto max-w-3xl">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#0891B2]">Traveler Community</span>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Stories & Itinerary Highlights</h1>
+          <p className="mt-1 text-sm text-slate-600">Share your travel memories, tips, and itineraries with fellow globetrotters.</p>
+        </div>
+      </div>
+
+      <main className="mx-auto w-full max-w-3xl px-4 py-8 space-y-8">
+        {error ? <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">{error}</p> : null}
+        {success ? <p className="rounded-lg bg-emerald-50 p-3 text-xs font-semibold text-emerald-700 border border-emerald-200">{success}</p> : null}
 
         {/* Create Post Card */}
-        <section className="mt-6 rounded-lg border bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold">Share with the Community</h2>
-          <form action={createPost} className="mt-3 flex flex-col gap-3">
+        <section className="pacific-card p-6">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0891B2] text-xs text-white font-bold">
+              ✎
+            </span>
+            <h2 className="text-base font-bold text-slate-900">Share with the Community</h2>
+          </div>
+
+          <form action={createPost} className="mt-4 flex flex-col gap-3.5 text-xs font-semibold text-slate-700">
             <textarea
               name="content"
               required
               rows={3}
-              placeholder="What did you discover on your recent trip? Share tips, highlights..."
-              className="rounded-lg border px-3 py-2 text-sm"
+              placeholder="What did you discover on your recent trip? Share tips, highlights, or recommendations..."
+              className="pacific-input w-full text-xs font-normal"
             />
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <select name="trip_id" className="rounded-lg border px-3 py-1.5 text-xs">
+              <select name="trip_id" className="pacific-input text-xs">
                 <option value="">Link a trip (optional)...</option>
                 {userTrips?.map((t) => (
                   <option key={t.trip_id} value={t.trip_id}>
@@ -125,7 +136,7 @@ export default async function CommunityPage({
                 ))}
               </select>
 
-              <select name="activity_id" className="rounded-lg border px-3 py-1.5 text-xs">
+              <select name="activity_id" className="pacific-input text-xs">
                 <option value="">Link an activity (optional)...</option>
                 {popularActivities?.map((a) => (
                   <option key={a.activity_id} value={a.activity_id}>
@@ -142,10 +153,10 @@ export default async function CommunityPage({
               placeholder="https://example.com/photo.jpg"
             />
 
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-2">
               <button
                 type="submit"
-                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700"
+                className="btn-coral px-6 py-2.5 text-xs font-bold shadow-md"
               >
                 Publish Post
               </button>
@@ -154,11 +165,11 @@ export default async function CommunityPage({
         </section>
 
         {/* Community Feed */}
-        <div className="mt-8 space-y-6">
+        <div className="space-y-6">
           {(posts ?? []).length === 0 ? (
-            <p className="rounded-lg border bg-white p-8 text-center text-sm text-zinc-500">
-              No posts yet. Be the first to share an update!
-            </p>
+            <div className="pacific-card p-12 text-center text-sm text-slate-500">
+              No posts yet. Be the first to share an update with the traveler community!
+            </div>
           ) : (
             (posts ?? []).map((post) => {
               const author = authorMap.get(post.user_id);
@@ -170,16 +181,25 @@ export default async function CommunityPage({
               const linkedAct = post.activity_id ? actMap.get(post.activity_id) : null;
 
               return (
-                <article key={post.post_id} className="rounded-lg border bg-white p-5 shadow-sm">
+                <article key={post.post_id} className="pacific-card p-6">
                   {/* Post Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-zinc-200 flex items-center justify-center font-bold text-xs text-zinc-600">
-                        {author?.first_name?.[0] ?? "U"}
-                      </div>
+                      {author?.photo_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={author.photo_url}
+                          alt={authorName}
+                          className="h-10 w-10 rounded-full object-cover border border-slate-200"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-[#0B4F6C] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                          {author?.first_name?.[0] ?? "U"}
+                        </div>
+                      )}
                       <div>
-                        <p className="font-semibold text-sm text-zinc-900">{authorName}</p>
-                        <p className="text-xs text-zinc-400">
+                        <p className="font-bold text-sm text-slate-900">{authorName}</p>
+                        <p className="text-[11px] text-slate-400 font-medium">
                           {new Date(post.created_at).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
@@ -191,18 +211,33 @@ export default async function CommunityPage({
                   </div>
 
                   {/* Post Content */}
-                  <p className="mt-3 text-sm text-zinc-800 whitespace-pre-line">{post.content}</p>
+                  <p className="mt-3 text-sm text-slate-800 whitespace-pre-line leading-relaxed">{post.content}</p>
+
+                  {/* Attached Image */}
+                  {post.image_url ? (
+                    <div className="mt-3 overflow-hidden rounded-xl border border-slate-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={post.image_url}
+                        alt="Post media"
+                        className="max-h-96 w-full object-cover"
+                      />
+                    </div>
+                  ) : null}
 
                   {/* Linked Tags */}
                   {(linkedTrip || linkedAct) ? (
                     <div className="mt-3 flex flex-wrap gap-2 text-xs">
                       {linkedTrip ? (
-                        <span className="rounded bg-blue-50 px-2 py-1 text-blue-700 font-medium">
+                        <Link
+                          href={`/trips/${linkedTrip.trip_id}`}
+                          className="rounded-full bg-sky-50 px-2.5 py-1 text-[#0891B2] font-semibold border border-sky-200 hover:bg-sky-100"
+                        >
                           ✈ Trip: {linkedTrip.name}
-                        </span>
+                        </Link>
                       ) : null}
                       {linkedAct ? (
-                        <span className="rounded bg-amber-50 px-2 py-1 text-amber-700 font-medium">
+                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-800 font-semibold border border-amber-200">
                           ★ Activity: {linkedAct.name}
                         </span>
                       ) : null}
@@ -210,36 +245,36 @@ export default async function CommunityPage({
                   ) : null}
 
                   {/* Likes & Comments Bar */}
-                  <div className="mt-4 flex items-center gap-4 border-t pt-3 text-xs">
+                  <div className="mt-4 flex items-center gap-4 border-t border-slate-100 pt-3 text-xs">
                     <form action={togglePostLike}>
                       <input type="hidden" name="post_id" value={post.post_id} />
                       <input type="hidden" name="is_liked" value={isLiked ? "true" : "false"} />
                       <button
                         type="submit"
-                        className={`flex items-center gap-1 font-semibold ${
-                          isLiked ? "text-red-600" : "text-zinc-600 hover:text-zinc-900"
+                        className={`flex items-center gap-1 font-bold ${
+                          isLiked ? "text-[#FF5A5F]" : "text-slate-500 hover:text-slate-900"
                         }`}
                       >
                         {isLiked ? "♥" : "♡"} {postLikes.length} {postLikes.length === 1 ? "Like" : "Likes"}
                       </button>
                     </form>
 
-                    <span className="text-zinc-400">·</span>
-                    <span className="text-zinc-500">{postComments.length} Comments</span>
+                    <span className="text-slate-300">·</span>
+                    <span className="text-slate-500 font-medium">{postComments.length} Comments</span>
                   </div>
 
                   {/* Comments List */}
-                  <div className="mt-3 space-y-2 border-t pt-3">
+                  <div className="mt-3 space-y-2 border-t border-slate-100 pt-3">
                     {postComments.map((c) => {
                       const commentAuthor = commentAuthorMap.get(c.user_id);
                       const cName = commentAuthor
                         ? `${commentAuthor.first_name} ${commentAuthor.last_name ?? ""}`.trim()
-                        : "User";
+                        : "Traveler";
 
                       return (
-                        <div key={c.comment_id} className="rounded bg-zinc-50 p-2.5 text-xs">
-                          <span className="font-semibold text-zinc-800">{cName}: </span>
-                          <span className="text-zinc-700">{c.content}</span>
+                        <div key={c.comment_id} className="rounded-lg bg-slate-50 p-2.5 text-xs">
+                          <span className="font-bold text-slate-900">{cName}: </span>
+                          <span className="text-slate-700">{c.content}</span>
                         </div>
                       );
                     })}
@@ -251,11 +286,11 @@ export default async function CommunityPage({
                         name="content"
                         required
                         placeholder="Write a comment..."
-                        className="flex-1 rounded-lg border px-3 py-1.5 text-xs"
+                        className="pacific-input flex-1 text-xs py-1.5"
                       />
                       <button
                         type="submit"
-                        className="rounded-lg bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700"
+                        className="rounded-lg bg-[#0B4F6C] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[#0E6C8F]"
                       >
                         Reply
                       </button>
