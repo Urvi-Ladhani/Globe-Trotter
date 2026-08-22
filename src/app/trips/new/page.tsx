@@ -101,6 +101,52 @@ export default async function NewTripPage({
             />
           </label>
 
+          {/* Visibility Options */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-800">Trip Visibility</label>
+            <div className="grid gap-2.5 sm:grid-cols-3">
+              <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-slate-200 bg-white p-3 hover:bg-slate-50 transition-colors">
+                <input
+                  type="radio"
+                  name="visibility"
+                  value="private"
+                  defaultChecked
+                  className="mt-0.5"
+                />
+                <div>
+                  <p className="font-bold text-xs text-slate-900">🔒 Private</p>
+                  <p className="text-[10px] text-slate-500 font-normal">Only you & invited partners.</p>
+                </div>
+              </label>
+
+              <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-slate-200 bg-white p-3 hover:bg-slate-50 transition-colors">
+                <input
+                  type="radio"
+                  name="visibility"
+                  value="link_only"
+                  className="mt-0.5"
+                />
+                <div>
+                  <p className="font-bold text-xs text-slate-900">🔗 Link Only</p>
+                  <p className="text-[10px] text-slate-500 font-normal">Anyone with secret link can view.</p>
+                </div>
+              </label>
+
+              <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-slate-200 bg-white p-3 hover:bg-slate-50 transition-colors">
+                <input
+                  type="radio"
+                  name="visibility"
+                  value="public"
+                  className="mt-0.5"
+                />
+                <div>
+                  <p className="font-bold text-xs text-slate-900">🌍 Public</p>
+                  <p className="text-[10px] text-slate-500 font-normal">Discoverable by community.</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
           <button
             type="submit"
             className="btn-coral mt-2 py-3 text-sm font-bold shadow-md"
