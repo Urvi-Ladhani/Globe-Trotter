@@ -182,18 +182,25 @@ export default async function AdminPage({
                         {u.home_city ?? "—"}, {u.home_country ?? "—"}
                       </td>
                       <td className="px-3 py-2.5">
-                        <form action={updateUserRole} className="inline-block">
+                        <form action={updateUserRole} className="flex items-center gap-1">
                           <input type="hidden" name="target_user_id" value={u.id} />
                           <select
                             name="role"
                             defaultValue={u.role}
                             disabled={isSelf}
-                            onChange={(e) => e.target.form?.requestSubmit()}
                             className="rounded border px-1.5 py-0.5 text-xs capitalize"
                           >
                             <option value="user">User</option>
                             <option value="admin">Admin</option>
                           </select>
+                          {!isSelf ? (
+                            <button
+                              type="submit"
+                              className="rounded border bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium hover:bg-zinc-200"
+                            >
+                              Save
+                            </button>
+                          ) : null}
                         </form>
                       </td>
                       <td className="px-3 py-2.5">

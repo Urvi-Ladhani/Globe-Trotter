@@ -1,4 +1,5 @@
 import { registerAction } from "@/lib/actions/auth";
+import { GoogleAuthButton } from "@/components/google-auth-button";
 
 export default async function RegisterPage({
   searchParams,
@@ -16,7 +17,21 @@ export default async function RegisterPage({
         {error ? (
           <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>
         ) : null}
-        <form action={registerAction} className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div className="mt-6">
+          <GoogleAuthButton text="Sign up with Google" />
+        </div>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-zinc-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-zinc-400">Or register with email</span>
+          </div>
+        </div>
+
+        <form action={registerAction} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm font-medium">
             First name *
             <input name="first_name" required className="rounded-lg border border-zinc-300 px-3 py-2 text-sm" />

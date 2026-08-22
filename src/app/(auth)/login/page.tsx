@@ -1,4 +1,5 @@
 import { loginAction } from "@/lib/actions/auth";
+import { GoogleAuthButton } from "@/components/google-auth-button";
 
 export default async function LoginPage({
   searchParams,
@@ -28,7 +29,20 @@ export default async function LoginPage({
           </p>
         ) : null}
 
-        <form action={loginAction} className="mt-6 flex flex-col gap-4">
+        <div className="mt-6">
+          <GoogleAuthButton text="Continue with Google" />
+        </div>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-zinc-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-zinc-400">Or continue with email</span>
+          </div>
+        </div>
+
+        <form action={loginAction} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1 text-sm font-medium">
             Email
             <input
