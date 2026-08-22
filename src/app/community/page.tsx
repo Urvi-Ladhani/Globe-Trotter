@@ -4,6 +4,7 @@ import type { Tables } from "@/lib/database.types";
 import { Nav } from "@/components/nav";
 import { ImageUploadInput } from "@/components/image-upload-input";
 import { createPost, togglePostLike, addPostComment } from "@/lib/actions/community";
+import { cloneTripAction } from "@/lib/actions/trips";
 
 export const dynamic = "force-dynamic";
 
@@ -17,20 +18,34 @@ export default async function CommunityPage({
   const { supabase, user, profile } = await requireActiveUser();
   const { error, success } = await searchParams;
 
-  // 1. Fetch posts ordered by newest
+  // 1. Fetch public itineraries created by the community
+  const { data: publicTrips } = await supabase
+    .from("trips")
+    .select("trip_id, name, description, start_date, end_date, share_token, user_id")
+    .eq("is_public", true)
+    .order("created_at", { ascending: false })
+    .limit(6);
+
+  // 2. Fetch posts ordered by newest
   const { data: posts } = await supabase
     .from("community_posts")
     .select("*")
     .order("created_at", { ascending: false });
 
-  // 2. Fetch author profiles for all posts
-  const userIds = Array.from(new Set((posts ?? []).map((p) => p.user_id)));
+  // 3. Fetch author profiles for all posts and public trips
+  const userIds = Array.from(
+    new Set([
+      ...(posts ?? []).map((p) => p.user_id),
+      ...(publicTrips ?? []).map((t) => t.user_id),
+    ])
+  );
+
   const { data: authors } = userIds.length
     ? await supabase.from("profiles").select("id, first_name, last_name, photo_url").in("id", userIds)
     : { data: [] };
   const authorMap = new Map((authors ?? []).map((a) => [a.id, a]));
 
-  // 3. Fetch likes for all posts
+  // 4. Fetch likes for all posts
   const postIds = (posts ?? []).map((p) => p.post_id);
   const { data: likes } = postIds.length
     ? await supabase.from("post_likes").select("post_id, user_id").in("post_id", postIds)
@@ -41,7 +56,7 @@ export default async function CommunityPage({
     (likesByPost[l.post_id] ??= []).push(l.user_id);
   }
 
-  // 4. Fetch comments for all posts
+  // 5. Fetch comments for all posts
   const { data: comments } = postIds.length
     ? await supabase
         .from("post_comments")
@@ -57,28 +72,28 @@ export default async function CommunityPage({
     commentAuthorIds.push(c.user_id);
   }
 
-  // 5. Fetch authors for comments
+  // 6. Fetch authors for comments
   const uniqueCommentAuthorIds = Array.from(new Set(commentAuthorIds));
   const { data: commentAuthors } = uniqueCommentAuthorIds.length
     ? await supabase.from("profiles").select("id, first_name, last_name, photo_url").in("id", uniqueCommentAuthorIds)
     : { data: [] };
   const commentAuthorMap = new Map((commentAuthors ?? []).map((a) => [a.id, a]));
 
-  // 6. User's trips for linking in post
+  // 7. User's trips for linking in post
   const { data: userTrips } = await supabase
     .from("trips")
     .select("trip_id, name")
     .eq("user_id", user.id);
 
-  // 7. Popular activities for linking in post
+  // 8. Popular activities for linking in post
   const { data: popularActivities } = await supabase
     .from("activities")
     .select("activity_id, name")
     .eq("is_approved", true)
-    .order("popularity_score", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(10);
 
-  // 8. Linked trip & activity maps
+  // 9. Linked trip & activity maps
   const linkedTripIds = (posts ?? []).map((p) => p.trip_id).filter((id): id is string => !!id);
   const { data: linkedTrips } = linkedTripIds.length
     ? await supabase.from("trips").select("trip_id, name").in("trip_id", linkedTripIds)
@@ -97,16 +112,71 @@ export default async function CommunityPage({
 
       {/* Header Banner */}
       <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/40 to-transparent py-8 px-4">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl">
           <span className="text-xs font-bold uppercase tracking-wider text-[#0891B2]">Traveler Community</span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Stories & Itinerary Highlights</h1>
-          <p className="mt-1 text-sm text-slate-600">Share your travel memories, tips, and itineraries with fellow globetrotters.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Community Feed & Itineraries</h1>
+          <p className="mt-1 text-sm text-slate-600">Discover public itineraries, clone trip templates, and share travel stories.</p>
         </div>
       </div>
 
-      <main className="mx-auto w-full max-w-3xl px-4 py-8 space-y-8">
+      <main className="mx-auto w-full max-w-4xl px-4 py-8 space-y-10">
         {error ? <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">{error}</p> : null}
         {success ? <p className="rounded-lg bg-emerald-50 p-3 text-xs font-semibold text-emerald-700 border border-emerald-200">{success}</p> : null}
+
+        {/* Public Itineraries Showcase */}
+        {(publicTrips ?? []).length > 0 ? (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-slate-900">🌍 Featured Public Itineraries</span>
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
+                  {publicTrips?.length} Available
+                </span>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {(publicTrips ?? []).map((pt) => {
+                const creator = authorMap.get(pt.user_id);
+                const creatorName = creator ? `${creator.first_name} ${creator.last_name ?? ""}`.trim() : "Traveler";
+
+                return (
+                  <div key={pt.trip_id} className="pacific-card pacific-card-hover p-4 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase text-[#0891B2]">Public Trip</span>
+                      <h3 className="font-bold text-slate-900 text-base mt-0.5">{pt.name}</h3>
+                      <p className="text-xs text-slate-500 font-medium">
+                        By <span className="text-slate-800 font-semibold">{creatorName}</span>
+                      </p>
+                      {pt.description ? <p className="text-xs text-slate-600 mt-2 line-clamp-2">{pt.description}</p> : null}
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                      {pt.share_token ? (
+                        <Link
+                          href={`/trips/share/${pt.share_token}`}
+                          className="font-bold text-[#0891B2] hover:underline"
+                        >
+                          View Itinerary →
+                        </Link>
+                      ) : null}
+
+                      <form action={cloneTripAction}>
+                        <input type="hidden" name="source_trip_id" value={pt.trip_id} />
+                        <button
+                          type="submit"
+                          className="rounded bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-[#0891B2] hover:bg-sky-100"
+                        >
+                          📋 Clone
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
         {/* Create Post Card */}
         <section className="pacific-card p-6">

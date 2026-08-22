@@ -4,7 +4,14 @@ import { requireActiveUser } from "@/lib/auth";
 import type { Tables } from "@/lib/database.types";
 import { Nav } from "@/components/nav";
 import { ImageUploadInput } from "@/components/image-upload-input";
-import { toggleTripSharing, inviteCollaborator, removeCollaborator, updateTrip } from "@/lib/actions/trips";
+import { CopyShareLinkButton } from "@/components/copy-share-link-button";
+import {
+  updateTripVisibility,
+  inviteCollaborator,
+  removeCollaborator,
+  updateTrip,
+  cloneTripAction,
+} from "@/lib/actions/trips";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +38,13 @@ export default async function TripDetailPage({
   if (!trip) notFound();
 
   const isOwner = trip.user_id === user.id;
+
+  // Determine visibility mode
+  const currentVisibility = trip.is_public
+    ? "public"
+    : trip.share_token
+    ? "link_only"
+    : "private";
 
   // Fetch stops with city info
   const { data: stops } = await supabase
@@ -88,6 +102,13 @@ export default async function TripDetailPage({
     : { data: [] };
   const profileMap = new Map((collabProfiles ?? []).map((p) => [p.id, p]));
 
+  // Fetch registered travelers for invitation dropdown
+  const { data: otherTravelers } = await supabase
+    .from("profiles")
+    .select("id, first_name, last_name")
+    .neq("id", user.id)
+    .limit(20);
+
   // Calculate total planned activity cost
   const totalPlannedActivitiesInr = (tripActivities ?? []).reduce(
     (acc, cur) => acc + (cur.planned_cost_inr || 0),
@@ -102,16 +123,24 @@ export default async function TripDetailPage({
       <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/50 to-transparent py-8 px-4">
         <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{trip.name}</h1>
               <span className="rounded-full bg-sky-50 px-3 py-0.5 text-xs font-bold capitalize text-[#0891B2] border border-sky-200">
                 {trip.status}
               </span>
-              {trip.is_public ? (
+              {currentVisibility === "public" ? (
                 <span className="rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
-                  Public Link Active
+                  🌍 Public
                 </span>
-              ) : null}
+              ) : currentVisibility === "link_only" ? (
+                <span className="rounded-full bg-blue-50 px-3 py-0.5 text-xs font-bold text-blue-700 border border-blue-200">
+                  🔗 Link Only
+                </span>
+              ) : (
+                <span className="rounded-full bg-slate-100 px-3 py-0.5 text-xs font-bold text-slate-600 border border-slate-200">
+                  🔒 Private
+                </span>
+              )}
             </div>
             <p className="mt-1.5 text-sm text-slate-600 font-medium">
               📅 {trip.start_date ?? "Dates TBD"} — {trip.end_date ?? "TBD"}
@@ -132,6 +161,16 @@ export default async function TripDetailPage({
             >
               💰 Budget & Expenses
             </Link>
+            <form action={cloneTripAction}>
+              <input type="hidden" name="source_trip_id" value={tripId} />
+              <button
+                type="submit"
+                className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs"
+                title="Duplicate this itinerary as a template"
+              >
+                📋 Clone Trip
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -250,12 +289,186 @@ export default async function TripDetailPage({
             )}
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar: Visibility, Sharing & Collaborators */}
           <div className="space-y-6">
+            {/* Trip Visibility & Public Share Controls */}
+            {isOwner ? (
+              <section className="pacific-card p-5">
+                <h3 className="font-bold text-slate-900 text-base">Trip Visibility & Sharing</h3>
+                <p className="mt-1 text-xs text-slate-500">
+                  Control who can discover and view this trip itinerary.
+                </p>
+
+                <form action={updateTripVisibility} className="mt-4 flex flex-col gap-3 text-xs font-semibold text-slate-700">
+                  <input type="hidden" name="trip_id" value={trip.trip_id} />
+                  
+                  <div className="space-y-2">
+                    <label className={`flex cursor-pointer items-start gap-2.5 rounded-lg border p-3 transition-colors ${
+                      currentVisibility === "private" ? "border-[#0891B2] bg-sky-50/50" : "border-slate-200 hover:bg-slate-50"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="visibility"
+                        value="private"
+                        defaultChecked={currentVisibility === "private"}
+                        className="mt-0.5"
+                      />
+                      <div>
+                        <p className="font-bold text-slate-900">🔒 Private</p>
+                        <p className="text-[11px] text-slate-500 font-normal">Only you and invited collaborators can view.</p>
+                      </div>
+                    </label>
+
+                    <label className={`flex cursor-pointer items-start gap-2.5 rounded-lg border p-3 transition-colors ${
+                      currentVisibility === "link_only" ? "border-[#0891B2] bg-sky-50/50" : "border-slate-200 hover:bg-slate-50"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="visibility"
+                        value="link_only"
+                        defaultChecked={currentVisibility === "link_only"}
+                        className="mt-0.5"
+                      />
+                      <div>
+                        <p className="font-bold text-slate-900">🔗 Shared via Secret Link</p>
+                        <p className="text-[11px] text-slate-500 font-normal">Anyone with the link can view & request to join.</p>
+                      </div>
+                    </label>
+
+                    <label className={`flex cursor-pointer items-start gap-2.5 rounded-lg border p-3 transition-colors ${
+                      currentVisibility === "public" ? "border-[#0891B2] bg-sky-50/50" : "border-slate-200 hover:bg-slate-50"
+                    }`}>
+                      <input
+                        type="radio"
+                        name="visibility"
+                        value="public"
+                        defaultChecked={currentVisibility === "public"}
+                        className="mt-0.5"
+                      />
+                      <div>
+                        <p className="font-bold text-slate-900">🌍 Public</p>
+                        <p className="text-[11px] text-slate-500 font-normal">Visible to the traveler community and anyone with the link.</p>
+                      </div>
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn-teal py-2 text-xs font-bold shadow-xs mt-1"
+                  >
+                    Update Visibility
+                  </button>
+                </form>
+
+                {/* Secret Link Box if enabled */}
+                {trip.share_token ? (
+                  <div className="mt-4 border-t border-slate-100 pt-4 space-y-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Shareable Itinerary Link</p>
+                    <div className="rounded-lg bg-slate-50 p-2 text-xs font-mono break-all border border-slate-200 text-slate-700">
+                      /trips/share/{trip.share_token}
+                    </div>
+                    <div className="flex gap-2 pt-1">
+                      <CopyShareLinkButton shareUrl={`/trips/share/${trip.share_token}`} />
+                      <Link
+                        href={`/trips/share/${trip.share_token}`}
+                        target="_blank"
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                      >
+                        Preview View ↗
+                      </Link>
+                    </div>
+                  </div>
+                ) : null}
+              </section>
+            ) : null}
+
+            {/* Trip Collaborators Section */}
+            <section className="pacific-card p-5">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-slate-900 text-base">Travel Collaborators</h3>
+                <span className="text-xs font-bold text-[#0891B2]">({collaborators?.length ?? 0})</span>
+              </div>
+              <p className="mt-1 text-xs text-slate-500">Invite travel partners to view or co-edit this trip itinerary.</p>
+
+              <div className="mt-3 space-y-2">
+                {(collaborators ?? []).length === 0 ? (
+                  <p className="text-xs text-slate-400 py-1">No collaborators added yet.</p>
+                ) : (
+                  (collaborators ?? []).map((collab) => {
+                    const p = profileMap.get(collab.user_id);
+                    const name = p ? `${p.first_name} ${p.last_name ?? ""}`.trim() : collab.user_id;
+                    return (
+                      <div key={collab.user_id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-2.5 text-xs shadow-xs">
+                        <div>
+                          <p className="font-bold text-slate-900">{name}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="rounded bg-sky-50 px-1.5 py-0.2 text-[10px] font-semibold text-[#0891B2] capitalize">
+                              {collab.permission === "edit" ? "Can Edit" : "View Only"}
+                            </span>
+                            <span className={`text-[10px] font-medium capitalize ${
+                              collab.status === "accepted" ? "text-emerald-600" : "text-amber-600"
+                            }`}>
+                              • {collab.status}
+                            </span>
+                          </div>
+                        </div>
+                        {isOwner ? (
+                          <form action={removeCollaborator}>
+                            <input type="hidden" name="trip_id" value={tripId} />
+                            <input type="hidden" name="user_id" value={collab.user_id} />
+                            <button type="submit" className="text-xs font-semibold text-red-500 hover:underline">
+                              Remove
+                            </button>
+                          </form>
+                        ) : null}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {isOwner ? (
+                <form action={inviteCollaborator} className="mt-4 flex flex-col gap-2.5 border-t border-slate-100 pt-3 text-xs font-semibold text-slate-700">
+                  <input type="hidden" name="trip_id" value={tripId} />
+                  
+                  <label className="flex flex-col gap-1">Invite Traveler:
+                    <input
+                      name="user_identifier"
+                      required
+                      placeholder="Search traveler name or enter User ID..."
+                      list="travelers-list"
+                      className="pacific-input text-xs"
+                    />
+                    <datalist id="travelers-list">
+                      {otherTravelers?.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.first_name} {t.last_name ?? ""}
+                        </option>
+                      ))}
+                    </datalist>
+                  </label>
+
+                  <label className="flex flex-col gap-1">Permission Level:
+                    <select name="permission" className="pacific-input text-xs">
+                      <option value="view">View only</option>
+                      <option value="edit">Can Edit (Add stops & activities)</option>
+                    </select>
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="btn-coral py-2 font-bold shadow-xs"
+                  >
+                    + Send Invitation
+                  </button>
+                </form>
+              ) : null}
+            </section>
+
             {/* Trip Settings */}
             {isOwner ? (
               <section className="pacific-card p-5">
-                <h3 className="font-bold text-slate-900 text-base">Trip Settings</h3>
+                <h3 className="font-bold text-slate-900 text-base">Trip Details</h3>
                 <form action={updateTrip} className="mt-3 flex flex-col gap-3 text-xs font-semibold text-slate-700">
                   <input type="hidden" name="trip_id" value={trip.trip_id} />
                   <input type="hidden" name="name" value={trip.name} />
@@ -277,107 +490,11 @@ export default async function TripDetailPage({
                     placeholder="https://images.unsplash.com/photo-..."
                   />
                   <button type="submit" className="btn-teal py-2 text-xs font-bold">
-                    Save Trip Settings
+                    Save Trip Details
                   </button>
                 </form>
               </section>
             ) : null}
-
-            {/* Public Sharing */}
-            <section className="pacific-card p-5">
-              <h3 className="font-bold text-slate-900 text-base">Public Itinerary Link</h3>
-              <p className="mt-1 text-xs text-slate-500">
-                Share a read-only itinerary link with friends or family (expenses are never shown).
-              </p>
-
-              {trip.is_public && trip.share_token ? (
-                <div className="mt-3 space-y-2">
-                  <div className="rounded-lg bg-slate-50 p-2.5 text-xs font-mono break-all border border-slate-200 text-slate-700">
-                    /trips/share/{trip.share_token}
-                  </div>
-                  <Link
-                    href={`/trips/share/${trip.share_token}`}
-                    target="_blank"
-                    className="block text-center rounded-lg border border-[#0891B2] bg-white py-1.5 text-xs font-bold text-[#0891B2] hover:bg-sky-50"
-                  >
-                    Open Public View ↗
-                  </Link>
-                </div>
-              ) : null}
-
-              {isOwner ? (
-                <form action={toggleTripSharing} className="mt-4">
-                  <input type="hidden" name="trip_id" value={trip.trip_id} />
-                  <input type="hidden" name="is_public" value={trip.is_public ? "false" : "true"} />
-                  <button
-                    type="submit"
-                    className={`w-full rounded-lg py-2 text-xs font-bold text-white transition-colors ${
-                      trip.is_public ? "bg-slate-700 hover:bg-slate-800" : "btn-coral"
-                    }`}
-                  >
-                    {trip.is_public ? "Disable Public Sharing" : "Enable Public Sharing"}
-                  </button>
-                </form>
-              ) : null}
-            </section>
-
-            {/* Trip Collaborators */}
-            <section className="pacific-card p-5">
-              <h3 className="font-bold text-slate-900 text-base">Collaborators</h3>
-              <p className="mt-1 text-xs text-slate-500">Invite travel partners to view or edit this trip.</p>
-
-              <div className="mt-3 space-y-2">
-                {(collaborators ?? []).length === 0 ? (
-                  <p className="text-xs text-slate-400 py-1">No collaborators added yet.</p>
-                ) : (
-                  (collaborators ?? []).map((collab) => {
-                    const p = profileMap.get(collab.user_id);
-                    const name = p ? `${p.first_name} ${p.last_name ?? ""}`.trim() : collab.user_id;
-                    return (
-                      <div key={collab.user_id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-2.5 text-xs">
-                        <div>
-                          <p className="font-bold text-slate-900">{name}</p>
-                          <p className="text-slate-500 text-[11px] capitalize">{collab.permission} · {collab.status}</p>
-                        </div>
-                        {isOwner ? (
-                          <form action={removeCollaborator}>
-                            <input type="hidden" name="trip_id" value={tripId} />
-                            <input type="hidden" name="user_id" value={collab.user_id} />
-                            <button type="submit" className="text-xs font-medium text-red-500 hover:underline">Remove</button>
-                          </form>
-                        ) : null}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-
-              {isOwner ? (
-                <form action={inviteCollaborator} className="mt-4 flex flex-col gap-2.5 border-t border-slate-100 pt-3 text-xs font-semibold text-slate-700">
-                  <input type="hidden" name="trip_id" value={tripId} />
-                  <label className="flex flex-col gap-1">User ID to invite:
-                    <input
-                      name="user_id"
-                      required
-                      placeholder="e.g. user uuid"
-                      className="pacific-input text-xs"
-                    />
-                  </label>
-                  <label className="flex flex-col gap-1">Permission:
-                    <select name="permission" className="pacific-input text-xs">
-                      <option value="view">View only</option>
-                      <option value="edit">Can Edit</option>
-                    </select>
-                  </label>
-                  <button
-                    type="submit"
-                    className="btn-coral py-2 font-bold shadow-xs"
-                  >
-                    Send Invitation
-                  </button>
-                </form>
-              ) : null}
-            </section>
           </div>
         </div>
       </main>
