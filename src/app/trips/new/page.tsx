@@ -3,6 +3,7 @@ import { requireActiveUser } from "@/lib/auth";
 import { createTrip } from "@/lib/actions/trips";
 import { Nav } from "@/components/nav";
 import { ImageUploadInput } from "@/components/image-upload-input";
+import { Lock, Link as LinkIcon, Globe, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -114,7 +115,9 @@ export default async function NewTripPage({
                   className="mt-0.5"
                 />
                 <div>
-                  <p className="font-bold text-xs text-slate-900">🔒 Private</p>
+                  <p className="font-bold text-xs text-slate-900 flex items-center gap-1">
+                    <Lock className="h-3.5 w-3.5 text-slate-600" /> Private
+                  </p>
                   <p className="text-[10px] text-slate-500 font-normal">Only you & invited partners.</p>
                 </div>
               </label>
@@ -127,7 +130,9 @@ export default async function NewTripPage({
                   className="mt-0.5"
                 />
                 <div>
-                  <p className="font-bold text-xs text-slate-900">🔗 Link Only</p>
+                  <p className="font-bold text-xs text-slate-900 flex items-center gap-1">
+                    <LinkIcon className="h-3.5 w-3.5 text-blue-600" /> Link Only
+                  </p>
                   <p className="text-[10px] text-slate-500 font-normal">Anyone with secret link can view.</p>
                 </div>
               </label>
@@ -140,7 +145,9 @@ export default async function NewTripPage({
                   className="mt-0.5"
                 />
                 <div>
-                  <p className="font-bold text-xs text-slate-900">🌍 Public</p>
+                  <p className="font-bold text-xs text-slate-900 flex items-center gap-1">
+                    <Globe className="h-3.5 w-3.5 text-emerald-600" /> Public
+                  </p>
                   <p className="text-[10px] text-slate-500 font-normal">Discoverable by community.</p>
                 </div>
               </label>
@@ -149,9 +156,10 @@ export default async function NewTripPage({
 
           <button
             type="submit"
-            className="btn-coral mt-2 py-3 text-sm font-bold shadow-md"
+            className="btn-coral mt-2 py-3 text-sm font-bold shadow-md flex items-center justify-center gap-2"
           >
-            Create Trip & Build Itinerary →
+            <span>Create Trip & Build Itinerary</span>
+            <ArrowRight className="h-4 w-4" />
           </button>
         </form>
 

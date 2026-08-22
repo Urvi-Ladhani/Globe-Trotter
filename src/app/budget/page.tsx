@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireActiveUser, convertFromInr, formatMoney } from "@/lib/auth";
 import { Nav } from "@/components/nav";
+import { Calendar, ArrowRight, Wallet } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -101,8 +102,9 @@ export default async function GeneralBudgetPage() {
                         {t.status}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium mt-1">
-                      📅 {t.start_date ?? "TBD"} – {t.end_date ?? "TBD"}
+                    <p className="text-xs text-slate-500 font-medium mt-1 flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                      <span>{t.start_date ?? "TBD"} – {t.end_date ?? "TBD"}</span>
                     </p>
 
                     <div className="mt-3 max-w-md">
@@ -122,9 +124,10 @@ export default async function GeneralBudgetPage() {
                   <div>
                     <Link
                       href={`/trips/${t.trip_id}/budget`}
-                      className="btn-coral px-4 py-2 text-xs font-bold shadow-xs inline-block"
+                      className="btn-coral px-4 py-2 text-xs font-bold shadow-xs inline-flex items-center gap-1"
                     >
-                      Manage Budget →
+                      <span>Manage Budget</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>
                 </div>

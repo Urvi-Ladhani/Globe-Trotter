@@ -360,14 +360,16 @@ export async function joinTripViaShareLink(formData: FormData) {
 
   if (!tripId) redirect("/");
 
-  // Check if already collaborator or owner
+  // Check trip existence and user ownership
   const { data: trip } = await supabase
     .from("trips")
-    .select("user_id")
+    .select("trip_id, user_id, is_public, share_token")
     .eq("trip_id", tripId)
     .maybeSingle();
 
-  if (trip?.user_id === user.id) {
+  if (!trip) redirect("/trips?error=Trip not found");
+
+  if (trip.user_id === user.id) {
     redirect(`/trips/${tripId}`);
   }
 
@@ -379,7 +381,7 @@ export async function joinTripViaShareLink(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/trips/share/${shareToken}?error=${encodeURIComponent(error.message)}`);
+    redirect(`/trips/share/${shareToken || "public"}?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/trips");

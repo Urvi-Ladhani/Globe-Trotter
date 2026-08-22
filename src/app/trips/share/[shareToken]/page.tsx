@@ -4,6 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/database.types";
 import { CopyShareLinkButton } from "@/components/copy-share-link-button";
 import { joinTripViaShareLink, cloneTripAction } from "@/lib/actions/trips";
+import {
+  Compass,
+  Calendar,
+  Globe,
+  Link as LinkIcon,
+  Copy,
+  UserPlus,
+  ArrowRight,
+  Pin,
+  Clock,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -112,7 +123,7 @@ export default async function PublicTripSharePage({
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3.5">
           <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight text-white">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF5A5F] text-white shadow-xs">
-              ✈
+              <Compass className="h-4 w-4" />
             </span>
             <span>Globe<span className="text-[#38BDF8]">Trotter</span></span>
           </Link>
@@ -144,16 +155,27 @@ export default async function PublicTripSharePage({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
-                <span className="rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
-                  {trip.is_public ? "🌍 Public Itinerary" : "🔗 Shared via Link"}
+                <span className="rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                  {trip.is_public ? (
+                    <>
+                      <Globe className="h-3 w-3" />
+                      <span>Public Itinerary</span>
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon className="h-3 w-3" />
+                      <span>Shared via Link</span>
+                    </>
+                  )}
                 </span>
                 <span className="rounded-full bg-sky-50 px-3 py-0.5 text-xs font-bold text-[#0891B2] border border-sky-200 capitalize">
                   {trip.status}
                 </span>
               </div>
               <h1 className="mt-3 text-3xl font-extrabold text-slate-900 sm:text-4xl">{trip.name}</h1>
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                📅 {trip.start_date ?? "Dates TBD"} – {trip.end_date ?? "TBD"}
+              <p className="mt-1 text-sm font-medium text-slate-500 flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 text-slate-400" />
+                <span>{trip.start_date ?? "Dates TBD"} – {trip.end_date ?? "TBD"}</span>
               </p>
 
               {/* Creator info */}
@@ -172,9 +194,10 @@ export default async function PublicTripSharePage({
                   {isCollaboratorOrOwner ? (
                     <Link
                       href={`/trips/${trip.trip_id}`}
-                      className="btn-teal px-4 py-2 text-xs font-bold shadow-xs"
+                      className="btn-teal px-4 py-2 text-xs font-bold shadow-xs flex items-center gap-1.5"
                     >
-                      Open in My Workspace →
+                      <span>Open in My Workspace</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   ) : (
                     <form action={joinTripViaShareLink}>
@@ -182,9 +205,10 @@ export default async function PublicTripSharePage({
                       <input type="hidden" name="share_token" value={shareToken} />
                       <button
                         type="submit"
-                        className="btn-coral px-4 py-2 text-xs font-bold shadow-md"
+                        className="btn-coral px-4 py-2 text-xs font-bold shadow-md flex items-center gap-1.5"
                       >
-                        + Join as Collaborator
+                        <UserPlus className="h-3.5 w-3.5" />
+                        <span>Join as Collaborator</span>
                       </button>
                     </form>
                   )}
@@ -193,19 +217,21 @@ export default async function PublicTripSharePage({
                     <input type="hidden" name="source_trip_id" value={trip.trip_id} />
                     <button
                       type="submit"
-                      className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs"
+                      className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs flex items-center gap-1.5"
                       title="Duplicate this itinerary into your own trips"
                     >
-                      📋 Copy Itinerary
+                      <Copy className="h-3.5 w-3.5" />
+                      <span>Copy Itinerary</span>
                     </button>
                   </form>
                 </>
               ) : (
                 <Link
                   href={`/register?next=/trips/share/${shareToken}`}
-                  className="btn-coral px-4 py-2 text-xs font-bold shadow-md"
+                  className="btn-coral px-4 py-2 text-xs font-bold shadow-md flex items-center gap-1.5"
                 >
-                  Sign up to Join / Copy Trip →
+                  <span>Sign up to Join / Copy Trip</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               )}
             </div>
@@ -241,8 +267,16 @@ export default async function PublicTripSharePage({
                   <div className="border-b border-teal-900/10 bg-slate-50/70 p-5">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#0891B2]">Stop #{index + 1}</span>
                     <h3 className="text-xl font-extrabold text-slate-900">{city?.name ?? "City"}, {city?.country}</h3>
-                    <p className="text-xs text-slate-500 font-medium">📅 {stop.start_date} to {stop.end_date}</p>
-                    {stop.notes ? <p className="mt-2 text-xs text-slate-600 italic">📌 {stop.notes}</p> : null}
+                    <p className="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                      <Calendar className="h-3 w-3 text-slate-400" />
+                      <span>{stop.start_date} to {stop.end_date}</span>
+                    </p>
+                    {stop.notes ? (
+                      <p className="mt-2 text-xs text-slate-600 italic flex items-center gap-1.5">
+                        <Pin className="h-3.5 w-3.5 text-amber-700 shrink-0" />
+                        <span>{stop.notes}</span>
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="p-5 space-y-4">
@@ -262,7 +296,11 @@ export default async function PublicTripSharePage({
                                     <span className="font-bold text-slate-900 text-sm">{title}</span>
                                     <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
                                       {catalogAct?.category ? <span className="rounded bg-sky-50 text-[#0891B2] px-1.5 py-0.5 text-[10px] font-semibold">{catalogAct.category}</span> : null}
-                                      {act.scheduled_time ? <span>• ⏰ {act.scheduled_time}</span> : null}
+                                      {act.scheduled_time ? (
+                                        <span className="flex items-center gap-1">
+                                          • <Clock className="h-3 w-3" /> {act.scheduled_time}
+                                        </span>
+                                      ) : null}
                                       {catalogAct?.duration_minutes ? <span>• {catalogAct.duration_minutes} mins</span> : null}
                                     </div>
                                     {act.notes ? <p className="text-xs text-slate-500 mt-1">Note: {act.notes}</p> : null}
