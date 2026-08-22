@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireActiveUser } from "@/lib/auth";
 import { createTrip } from "@/lib/actions/trips";
 import { Nav } from "@/components/nav";
+import { ImageUploadInput } from "@/components/image-upload-input";
 
 export const dynamic = "force-dynamic";
 
@@ -75,14 +76,12 @@ export default async function NewTripPage({
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-sm font-medium">
-            Cover photo URL
-            <input
-              name="cover_photo_url"
-              placeholder="https://images.unsplash.com/photo-..."
-              className="rounded-lg border px-3 py-2 text-sm"
-            />
-          </label>
+          <ImageUploadInput
+            name="cover_photo_url"
+            label="Trip Cover Photo"
+            folder="trips"
+            placeholder="https://images.unsplash.com/photo-..."
+          />
 
           <label className="flex flex-col gap-1 text-sm font-medium">
             Description

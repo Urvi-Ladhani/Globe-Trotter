@@ -79,6 +79,7 @@ export async function completeOnboardingAction(formData: FormData) {
   const homeCity = emptyToNull(formData.get("home_city"));
   const homeCountry = emptyToNull(formData.get("home_country"));
   const bio = emptyToNull(formData.get("bio"));
+  const photoUrl = emptyToNull(formData.get("photo_url"));
   const preferredCurrency = String(formData.get("preferred_currency") || "INR").trim();
 
   if (!firstName || !phone || !homeCity || !homeCountry) {
@@ -94,6 +95,7 @@ export async function completeOnboardingAction(formData: FormData) {
       home_city: homeCity,
       home_country: homeCountry,
       bio: bio,
+      photo_url: photoUrl,
       preferred_currency: preferredCurrency,
       updated_at: new Date().toISOString(),
     })

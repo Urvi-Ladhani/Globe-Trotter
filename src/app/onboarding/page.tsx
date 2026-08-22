@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { completeOnboardingAction, logoutAction } from "@/lib/actions/auth";
+import { ImageUploadInput } from "@/components/image-upload-input";
 
 export const dynamic = "force-dynamic";
 
@@ -158,6 +159,14 @@ export default async function OnboardingPage({
               className="rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-900 focus:outline-none"
             />
           </label>
+
+          <ImageUploadInput
+            name="photo_url"
+            label="Profile Avatar (optional)"
+            defaultValue={profile?.photo_url ?? meta.avatar_url ?? meta.picture ?? ""}
+            folder="avatars"
+            placeholder="https://example.com/avatar.jpg"
+          />
 
           <button
             type="submit"
