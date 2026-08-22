@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireActiveUser, EXPENSE_CATEGORIES } from "@/lib/auth";
 import { Nav } from "@/components/nav";
 import { addExpense, deleteExpense } from "@/lib/actions/trips";
+import { CurrencySwitcher } from "@/components/currency-switcher";
 import { Calendar, Trash2, Plus, ArrowLeft, Wallet } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -89,22 +90,10 @@ export default async function TripBudgetPage({
           </div>
 
           {/* Currency Switcher */}
-          <form method="get" className="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-3 py-1.5 shadow-xs">
-            <span className="text-xs font-bold text-slate-500">Display Currency:</span>
-            <select
-              name="display_currency"
-              defaultValue={chosenCurrency}
-              // @ts-ignore
-              onChange={(e) => e.target.form?.submit()}
-              className="text-xs font-bold text-[#0891B2] focus:outline-none cursor-pointer"
-            >
-              {Array.from(rateMap.keys()).sort().map((curr) => (
-                <option key={curr} value={curr}>
-                  {curr}
-                </option>
-              ))}
-            </select>
-          </form>
+          <CurrencySwitcher
+            currencies={Array.from(rateMap.keys()).sort()}
+            defaultCurrency={chosenCurrency}
+          />
         </div>
       </div>
 
