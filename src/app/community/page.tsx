@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireActiveUser } from "@/lib/auth";
 import type { Tables } from "@/lib/database.types";
 import { Nav } from "@/components/nav";
+import { ImageUploadInput } from "@/components/image-upload-input";
 import { createPost, togglePostLike, addPostComment } from "@/lib/actions/community";
 
 export const dynamic = "force-dynamic";
@@ -114,7 +115,7 @@ export default async function CommunityPage({
               className="rounded-lg border px-3 py-2 text-sm"
             />
 
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               <select name="trip_id" className="rounded-lg border px-3 py-1.5 text-xs">
                 <option value="">Link a trip (optional)...</option>
                 {userTrips?.map((t) => (
@@ -132,13 +133,14 @@ export default async function CommunityPage({
                   </option>
                 ))}
               </select>
-
-              <input
-                name="image_url"
-                placeholder="Image URL (optional)"
-                className="rounded-lg border px-3 py-1.5 text-xs"
-              />
             </div>
+
+            <ImageUploadInput
+              name="image_url"
+              label="Post Photo (optional)"
+              folder="posts"
+              placeholder="https://example.com/photo.jpg"
+            />
 
             <div className="flex justify-end">
               <button

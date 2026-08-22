@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireActiveUser } from "@/lib/auth";
 import type { Tables } from "@/lib/database.types";
 import { Nav } from "@/components/nav";
+import { ImageUploadInput } from "@/components/image-upload-input";
 import { toggleTripSharing, inviteCollaborator, removeCollaborator, updateTrip } from "@/lib/actions/trips";
 
 export const dynamic = "force-dynamic";
@@ -262,6 +263,13 @@ export default async function TripDetailPage({
                   <label className="flex flex-col gap-1 text-xs font-medium">Estimated Budget (INR)
                     <input type="number" name="estimated_budget_inr" defaultValue={trip.estimated_budget_inr ?? undefined} className="rounded border px-2 py-1.5 text-sm" />
                   </label>
+                  <ImageUploadInput
+                    name="cover_photo_url"
+                    label="Trip Cover Photo"
+                    defaultValue={trip.cover_photo_url ?? ""}
+                    folder="trips"
+                    placeholder="https://images.unsplash.com/photo-..."
+                  />
                   <button type="submit" className="rounded bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700">Update Trip Settings</button>
                 </form>
               </section>

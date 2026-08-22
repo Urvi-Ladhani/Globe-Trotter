@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireActiveUser } from "@/lib/auth";
 import { Nav } from "@/components/nav";
+import { ImageUploadInput } from "@/components/image-upload-input";
 import { updateProfile, updatePhoneNumber, removeSavedDestination } from "@/lib/actions/profile";
 
 export const dynamic = "force-dynamic";
@@ -120,15 +121,13 @@ export default async function ProfilePage({
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-sm font-medium">
-                Photo URL
-                <input
-                  name="photo_url"
-                  defaultValue={profile?.photo_url ?? ""}
-                  placeholder="https://example.com/avatar.jpg"
-                  className="rounded-lg border px-3 py-2 text-sm"
-                />
-              </label>
+              <ImageUploadInput
+                name="photo_url"
+                label="Profile Avatar"
+                defaultValue={profile?.photo_url ?? ""}
+                folder="avatars"
+                placeholder="https://example.com/avatar.jpg"
+              />
 
               <button
                 type="submit"
