@@ -1,18 +1,27 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { Nav } from "@/components/nav";
 import { approveActivity, rejectActivity, updateUserStatus, updateUserRole } from "@/lib/actions/admin";
 
 export const dynamic = "force-dynamic";
 
+type AdminSearchParams = {
+  error?: string;
+  success?: string;
+  q?: string;
+  status?: string;
+  sort?: string;
+  group?: string;
+};
+
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; success?: string }>;
+  searchParams: Promise<AdminSearchParams>;
 }) {
   const { supabase, user, profile } = await requireAdmin();
-  const { error, success } = await searchParams;
+  const { error, success, q = "", status = "all", sort = "recent", group = "role" } = await searchParams;
+  const normalizedQuery = q.trim().toLowerCase();
 
   // 1. Analytics & Stats
   const { count: userCount } = await supabase.from("profiles").select("*", { count: "exact", head: true });
@@ -41,7 +50,27 @@ export default async function AdminPage({
     .from("profiles")
     .select("*")
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(50);
+
+  const visibleUsers = (allUsers ?? [])
+    .filter((candidate) => {
+      const name = `${candidate.first_name} ${candidate.last_name ?? ""}`.toLowerCase();
+      const location = `${candidate.home_city ?? ""} ${candidate.home_country ?? ""}`.toLowerCase();
+      return (!normalizedQuery || name.includes(normalizedQuery) || location.includes(normalizedQuery) || candidate.role.includes(normalizedQuery)) &&
+        (status === "all" || candidate.status === status);
+    })
+    .sort((left, right) => {
+      if (group === "role" && left.role !== right.role) return left.role.localeCompare(right.role);
+      if (group === "status" && left.status !== right.status) return left.status.localeCompare(right.status);
+      if (group === "location") {
+        const leftLocation = `${left.home_country ?? ""} ${left.home_city ?? ""}`;
+        const rightLocation = `${right.home_country ?? ""} ${right.home_city ?? ""}`;
+        if (leftLocation !== rightLocation) return leftLocation.localeCompare(rightLocation);
+      }
+      if (sort === "name") return `${left.first_name} ${left.last_name ?? ""}`.localeCompare(`${right.first_name} ${right.last_name ?? ""}`);
+      if (sort === "status") return left.status.localeCompare(right.status);
+      return new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
+    });
 
   // 4. Audit Logs
   const { data: auditLogs } = await supabase
@@ -51,8 +80,19 @@ export default async function AdminPage({
     .limit(10);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FDFBF7]">
+    <div className="admin-shell flex min-h-screen flex-col">
       <Nav profile={profile} isAdmin={true} />
+      <div className="admin-frame">
+      <form className="admin-toolbar" method="get">
+        <label className="admin-search"><span aria-hidden="true">?</span><input name="q" defaultValue={q} placeholder="Search users, roles, locations..." /></label>
+        <label><span>Group by</span><select name="group" defaultValue={group}><option value="role">Role</option><option value="status">Status</option><option value="location">Location</option></select></label>
+        <label><span>Filter</span><select name="status" defaultValue={status}><option value="all">All users</option><option value="active">Active</option><option value="suspended">Suspended</option></select></label>
+        <label><span>Sort by</span><select name="sort" defaultValue={sort}><option value="recent">Recent</option><option value="name">Name</option><option value="status">Status</option></select></label>
+        <button className="admin-filter-button" type="submit">Apply</button>
+      </form>
+      <nav className="admin-tabs" aria-label="Admin sections">
+        <a href="#users">Manage Users</a><Link href="/cities">Popular Cities</Link><Link href="/activities">Popular Activities</Link><a href="#analytics">User Trends and Analytics</a>
+      </nav>
 
       {/* Header Banner */}
       <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/40 to-transparent py-8 px-4">
@@ -70,7 +110,7 @@ export default async function AdminPage({
         {success ? <p className="rounded-lg bg-emerald-50 p-3 text-xs font-semibold text-emerald-700 border border-emerald-200">{success}</p> : null}
 
         {/* Metric Cards */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div id="analytics" className="grid grid-cols-2 gap-4 sm:grid-cols-4 admin-metrics">
           <div className="pacific-card p-5">
             <p className="text-[11px] font-bold text-[#0891B2] uppercase tracking-wider">Registered Users</p>
             <p className="mt-2 text-3xl font-extrabold text-slate-900">{userCount ?? 0}</p>
@@ -90,7 +130,7 @@ export default async function AdminPage({
         </div>
 
         {/* Pending Activity Moderation Queue */}
-        <section className="pacific-card overflow-hidden">
+        <section id="moderation" className="pacific-card overflow-hidden admin-section">
           <div className="border-b border-teal-900/10 bg-slate-50/70 p-5 flex items-center justify-between">
             <h2 className="text-base font-bold text-slate-900">
               Activity Moderation Queue ({pendingActivities?.length ?? 0})
@@ -146,7 +186,7 @@ export default async function AdminPage({
         </section>
 
         {/* User Management */}
-        <section className="pacific-card overflow-hidden">
+        <section id="users" className="pacific-card overflow-hidden admin-section">
           <div className="border-b border-teal-900/10 bg-slate-50/70 p-5">
             <h2 className="text-base font-bold text-slate-900">User Management</h2>
           </div>
@@ -162,7 +202,7 @@ export default async function AdminPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {(allUsers ?? []).map((u) => {
+                {visibleUsers.map((u) => {
                   const isSelf = u.id === user.id;
                   return (
                     <tr key={u.id} className="hover:bg-slate-50/60">
@@ -253,6 +293,7 @@ export default async function AdminPage({
           )}
         </section>
       </main>
+      </div>
     </div>
   );
 }
