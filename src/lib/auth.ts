@@ -41,6 +41,14 @@ export async function requireActiveUser() {
   return { supabase, user, profile };
 }
 
+export async function requireAdmin() {
+  const { supabase, user, profile } = await requireActiveUser();
+  if (profile?.role !== "admin") {
+    redirect("/");
+  }
+  return { supabase, user, profile };
+}
+
 export const ACTIVITY_CATEGORIES = [
   "Sightseeing",
   "Food",

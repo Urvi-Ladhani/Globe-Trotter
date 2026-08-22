@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FDFBF7;
+  --foreground: #0F172A;
+  --ocean-teal-dark: #0B4F6C;
+  --ocean-teal: #0891B2;
+  --ocean-teal-light: #E0F2FE;
+  --coral-accent: #FF5A5F;
+  --coral-hover: #E0484D;
+  --sand-card: #FFFFFF;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FDFBF7;
+  color: #0F172A;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Pacific Horizon Card & Surface Shadows */
+.pacific-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(8, 145, 178, 0.12);
+  box-shadow: 0 4px 20px -2px rgba(8, 79, 108, 0.06), 0 2px 6px -1px rgba(8, 79, 108, 0.04);
+  border-radius: 0.75rem;
+}
+
+.pacific-card-hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pacific-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -3px rgba(8, 79, 108, 0.12), 0 4px 10px -2px rgba(8, 79, 108, 0.06);
+  border-color: rgba(8, 145, 178, 0.25);
+}
+
+/* Primary Coral CTA Button */
+.btn-coral {
+  background-color: #FF5A5F;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(255, 90, 95, 0.25);
+}
+
+.btn-coral:hover {
+  background-color: #E0484D;
+}
+
+.btn-coral:active {
+  transform: scale(0.98);
+}
+
+/* Secondary Ocean Teal Button */
+.btn-teal {
+  background-color: #0891B2;
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.btn-teal:hover {
+  background-color: #0E7490;
+}
+
+/* Outline Teal Button */
+.btn-teal-outline {
+  border: 1px solid #0891B2;
+  color: #0891B2;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  background-color: #FFFFFF;
+  transition: all 0.15s ease;
+}
+
+.btn-teal-outline:hover {
+  background-color: #F0FDF4;
+  border-color: #0E7490;
+  color: #0E7490;
+}
+
+/* Pacific Inputs */
+.pacific-input {
+  border: 1px solid #CBD5E1;
+  background-color: #FFFFFF;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pacific-input:focus {
+  outline: none;
+  border-color: #0891B2;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.18);
 }

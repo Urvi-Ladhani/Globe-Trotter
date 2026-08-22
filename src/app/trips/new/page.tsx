@@ -22,92 +22,101 @@ export default async function NewTripPage({
     .limit(6);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#FDFBF7]">
       <Nav profile={profile} isAdmin={profile?.role === "admin"} />
+
       <main className="mx-auto w-full max-w-2xl px-4 py-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Plan a New Trip</h1>
-          <Link href="/trips" className="text-sm text-zinc-500 hover:underline">Cancel</Link>
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#0891B2]">Itinerary Builder</span>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Plan a New Trip</h1>
+          </div>
+          <Link href="/trips" className="text-xs font-semibold text-slate-500 hover:text-slate-800 underline">
+            Cancel
+          </Link>
         </div>
 
         {error ? (
-          <p className="mt-4 rounded bg-red-50 p-3 text-sm text-red-700">{error}</p>
+          <p className="mt-4 rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">
+            {error}
+          </p>
         ) : null}
 
-        <form action={createTrip} className="mt-6 flex flex-col gap-4 rounded-lg border bg-white p-6 shadow-sm">
+        <form action={createTrip} className="mt-6 flex flex-col gap-5 pacific-card p-6 sm:p-8">
           {city_id ? <input type="hidden" name="initial_city_id" value={city_id} /> : null}
 
-          <label className="flex flex-col gap-1 text-sm font-medium">
-            Trip name *
+          <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
+            Trip Name *
             <input
               name="name"
               required
-              placeholder="e.g. Summer in Southern Italy"
-              className="rounded-lg border px-3 py-2 text-sm"
+              placeholder="e.g. Italian Coastline Adventure"
+              className="pacific-input"
             />
           </label>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-sm font-medium">
-              Start date
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
+              Start Date
               <input
                 type="date"
                 name="start_date"
-                className="rounded-lg border px-3 py-2 text-sm"
+                className="pacific-input"
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm font-medium">
-              End date
+            <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
+              End Date
               <input
                 type="date"
                 name="end_date"
-                className="rounded-lg border px-3 py-2 text-sm"
+                className="pacific-input"
               />
             </label>
           </div>
 
-          <label className="flex flex-col gap-1 text-sm font-medium">
-            Estimated budget (INR)
+          <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
+            Estimated Budget (INR)
             <input
               type="number"
               name="estimated_budget_inr"
               placeholder="e.g. 150000"
-              className="rounded-lg border px-3 py-2 text-sm"
+              className="pacific-input"
             />
           </label>
 
           <ImageUploadInput
             name="cover_photo_url"
-            label="Trip Cover Photo"
+            label="Trip Cover Photo (Upload or Paste Link)"
             folder="trips"
             placeholder="https://images.unsplash.com/photo-..."
           />
 
-          <label className="flex flex-col gap-1 text-sm font-medium">
-            Description
+          <label className="flex flex-col gap-1.5 text-sm font-semibold text-slate-800">
+            Trip Notes / Description
             <textarea
               name="description"
               rows={3}
               placeholder="What are your goals or notes for this trip?"
-              className="rounded-lg border px-3 py-2 text-sm"
+              className="pacific-input"
             />
           </label>
 
           <button
             type="submit"
-            className="mt-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700"
+            className="btn-coral mt-2 py-3 text-sm font-bold shadow-md"
           >
-            Create trip & start building itinerary
+            Create Trip & Build Itinerary →
           </button>
         </form>
 
-        <div className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">Popular destination ideas</h2>
+        {/* Popular Destination Quick-Picks */}
+        <div className="mt-10">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Popular destination ideas</h2>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {popularCities?.map((c) => (
-              <div key={c.city_id} className="rounded-lg border bg-white p-3 text-sm">
-                <p className="font-semibold">{c.name}</p>
-                <p className="text-xs text-zinc-500">{c.country}</p>
+              <div key={c.city_id} className="pacific-card p-3 text-xs">
+                <p className="font-bold text-slate-900">{c.name}</p>
+                <p className="text-[11px] text-slate-500">{c.country}</p>
               </div>
             ))}
           </div>
