@@ -5,6 +5,17 @@ import { Nav } from "@/components/nav";
 import { ImageUploadInput } from "@/components/image-upload-input";
 import { createPost, togglePostLike, addPostComment } from "@/lib/actions/community";
 import { cloneTripAction } from "@/lib/actions/trips";
+import {
+  Globe,
+  Copy,
+  Edit3,
+  Compass,
+  Star,
+  Heart,
+  MessageCircle,
+  Send,
+  ArrowRight,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -128,7 +139,8 @@ export default async function CommunityPage({
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-base font-bold text-slate-900">🌍 Featured Public Itineraries</span>
+                <Globe className="h-4 w-4 text-[#0891B2]" />
+                <span className="text-base font-bold text-slate-900">Featured Public Itineraries</span>
                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
                   {publicTrips?.length} Available
                 </span>
@@ -155,9 +167,10 @@ export default async function CommunityPage({
                       {pt.share_token ? (
                         <Link
                           href={`/trips/share/${pt.share_token}`}
-                          className="font-bold text-[#0891B2] hover:underline"
+                          className="font-bold text-[#0891B2] hover:underline flex items-center gap-1"
                         >
-                          View Itinerary →
+                          <span>View Itinerary</span>
+                          <ArrowRight className="h-3 w-3" />
                         </Link>
                       ) : null}
 
@@ -165,9 +178,10 @@ export default async function CommunityPage({
                         <input type="hidden" name="source_trip_id" value={pt.trip_id} />
                         <button
                           type="submit"
-                          className="rounded bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-[#0891B2] hover:bg-sky-100"
+                          className="rounded bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-[#0891B2] hover:bg-sky-100 flex items-center gap-1"
                         >
-                          📋 Clone
+                          <Copy className="h-3 w-3" />
+                          <span>Clone</span>
                         </button>
                       </form>
                     </div>
@@ -181,8 +195,8 @@ export default async function CommunityPage({
         {/* Create Post Card */}
         <section className="pacific-card p-6">
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0891B2] text-xs text-white font-bold">
-              ✎
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0891B2] text-white">
+              <Edit3 className="h-3.5 w-3.5" />
             </span>
             <h2 className="text-base font-bold text-slate-900">Share with the Community</h2>
           </div>
@@ -226,9 +240,10 @@ export default async function CommunityPage({
             <div className="flex justify-end pt-2">
               <button
                 type="submit"
-                className="btn-coral px-6 py-2.5 text-xs font-bold shadow-md"
+                className="btn-coral px-6 py-2.5 text-xs font-bold shadow-md flex items-center gap-1.5"
               >
-                Publish Post
+                <Send className="h-3.5 w-3.5" />
+                <span>Publish Post</span>
               </button>
             </div>
           </form>
@@ -301,14 +316,16 @@ export default async function CommunityPage({
                       {linkedTrip ? (
                         <Link
                           href={`/trips/${linkedTrip.trip_id}`}
-                          className="rounded-full bg-sky-50 px-2.5 py-1 text-[#0891B2] font-semibold border border-sky-200 hover:bg-sky-100"
+                          className="rounded-full bg-sky-50 px-2.5 py-1 text-[#0891B2] font-semibold border border-sky-200 hover:bg-sky-100 flex items-center gap-1"
                         >
-                          ✈ Trip: {linkedTrip.name}
+                          <Compass className="h-3 w-3" />
+                          <span>Trip: {linkedTrip.name}</span>
                         </Link>
                       ) : null}
                       {linkedAct ? (
-                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-800 font-semibold border border-amber-200">
-                          ★ Activity: {linkedAct.name}
+                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-800 font-semibold border border-amber-200 flex items-center gap-1">
+                          <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
+                          <span>Activity: {linkedAct.name}</span>
                         </span>
                       ) : null}
                     </div>
@@ -321,16 +338,20 @@ export default async function CommunityPage({
                       <input type="hidden" name="is_liked" value={isLiked ? "true" : "false"} />
                       <button
                         type="submit"
-                        className={`flex items-center gap-1 font-bold ${
+                        className={`flex items-center gap-1.5 font-bold transition-colors ${
                           isLiked ? "text-[#FF5A5F]" : "text-slate-500 hover:text-slate-900"
                         }`}
                       >
-                        {isLiked ? "♥" : "♡"} {postLikes.length} {postLikes.length === 1 ? "Like" : "Likes"}
+                        <Heart className={`h-4 w-4 ${isLiked ? "fill-[#FF5A5F]" : ""}`} />
+                        <span>{postLikes.length} {postLikes.length === 1 ? "Like" : "Likes"}</span>
                       </button>
                     </form>
 
                     <span className="text-slate-300">·</span>
-                    <span className="text-slate-500 font-medium">{postComments.length} Comments</span>
+                    <span className="text-slate-500 font-medium flex items-center gap-1">
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      <span>{postComments.length} Comments</span>
+                    </span>
                   </div>
 
                   {/* Comments List */}
@@ -360,9 +381,10 @@ export default async function CommunityPage({
                       />
                       <button
                         type="submit"
-                        className="rounded-lg bg-[#0B4F6C] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[#0E6C8F]"
+                        className="rounded-lg bg-[#0B4F6C] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[#0E6C8F] flex items-center gap-1"
                       >
-                        Reply
+                        <Send className="h-3 w-3" />
+                        <span>Reply</span>
                       </button>
                     </form>
                   </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireActiveUser } from "@/lib/auth";
 import { Nav } from "@/components/nav";
 import { saveDestination, removeSavedDestination } from "@/lib/actions/profile";
+import { Heart, Star, Compass, ArrowRight, Search, SlidersHorizontal } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -65,23 +66,30 @@ export default async function CitiesPage({
       <div className="border-b border-teal-900/10 bg-gradient-to-b from-[#E0F2FE]/40 to-transparent py-8 px-4">
         <div className="mx-auto max-w-6xl">
           <span className="text-xs font-bold uppercase tracking-wider text-[#0891B2]">Destination Catalog</span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Explore Destinations</h1>
-          <p className="mt-1 text-sm text-slate-600">Discover cities, check cost indices, and bookmark spots for upcoming itineraries.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Explore Global Cities & Regions</h1>
+          <p className="mt-1 text-sm text-slate-600">Discover cities, compare cost indexes, explore activities, and bookmark your dream destinations.</p>
         </div>
       </div>
 
       <main className="mx-auto w-full max-w-6xl px-4 py-8 space-y-8">
-        {/* Search & Filter Bar */}
-        <section className="pacific-card p-5">
-          <form method="get" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <input
-              name="search"
-              defaultValue={search ?? ""}
-              placeholder="Search city or country..."
-              className="pacific-input text-xs"
-            />
+        {/* Search & Filters */}
+        <section className="pacific-card p-4">
+          <form className="flex flex-wrap items-center gap-3">
+            <div className="relative min-w-[220px] flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-3.5 w-3.5" />
+              <input
+                name="search"
+                defaultValue={search ?? ""}
+                placeholder="Search city or country..."
+                className="pacific-input w-full pl-9 text-xs"
+              />
+            </div>
 
-            <select name="region" defaultValue={region ?? ""} className="pacific-input text-xs">
+            <select
+              name="region"
+              defaultValue={region ?? ""}
+              className="pacific-input text-xs"
+            >
               <option value="">All Regions</option>
               {regions.map((r) => (
                 <option key={r} value={r}>
@@ -90,18 +98,23 @@ export default async function CitiesPage({
               ))}
             </select>
 
-            <select name="sort" defaultValue={sort ?? "popularity"} className="pacific-input text-xs">
-              <option value="popularity">Sort by Popularity</option>
-              <option value="name">Sort by Name (A–Z)</option>
-              <option value="cost_asc">Cost Index (Lowest first)</option>
-              <option value="cost_desc">Cost Index (Highest first)</option>
+            <select
+              name="sort"
+              defaultValue={sort ?? ""}
+              className="pacific-input text-xs"
+            >
+              <option value="">Sort: Most Popular</option>
+              <option value="name">Sort: Name (A-Z)</option>
+              <option value="cost_asc">Cost: Low to High</option>
+              <option value="cost_desc">Cost: High to Low</option>
             </select>
 
             <button
               type="submit"
-              className="btn-coral py-2 text-xs font-bold shadow-xs"
+              className="btn-coral py-2 text-xs font-bold shadow-xs flex items-center gap-1.5"
             >
-              Filter Destinations
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              <span>Filter Destinations</span>
             </button>
           </form>
         </section>
@@ -134,7 +147,7 @@ export default async function CitiesPage({
                           title="Remove bookmark"
                           className="rounded-full bg-rose-50 p-2 text-[#FF5A5F] hover:bg-rose-100 transition-colors"
                         >
-                          ♥
+                          <Heart className="h-4 w-4 fill-[#FF5A5F]" />
                         </button>
                       </form>
                     ) : (
@@ -145,7 +158,7 @@ export default async function CitiesPage({
                           title="Bookmark destination"
                           className="rounded-full bg-slate-100 p-2 text-slate-400 hover:text-[#FF5A5F] hover:bg-rose-50 transition-colors"
                         >
-                          ♡
+                          <Heart className="h-4 w-4" />
                         </button>
                       </form>
                     )}
@@ -156,8 +169,9 @@ export default async function CitiesPage({
                   ) : null}
 
                   <div className="mt-4 flex items-center gap-3 text-xs">
-                    <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-amber-800 font-bold">
-                      ★ Popularity: {c.popularity_score}
+                    <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-amber-800 font-bold flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
+                      <span>Popularity: {c.popularity_score}</span>
                     </span>
                     {c.cost_index ? (
                       <span className="rounded-full bg-sky-50 border border-sky-200 px-2.5 py-0.5 text-[#0891B2] font-semibold">
@@ -170,28 +184,25 @@ export default async function CitiesPage({
                 <div className="border-t border-slate-100 bg-slate-50/70 p-4 flex items-center justify-between text-xs">
                   <Link
                     href={`/activities?city_id=${c.city_id}`}
-                    className="font-bold text-[#0891B2] hover:underline"
+                    className="font-bold text-[#0891B2] hover:underline flex items-center gap-1"
                   >
-                    View Activities →
+                    <span>Explore Activities</span>
+                    <ArrowRight className="h-3 w-3" />
                   </Link>
 
-                  <Link
-                    href={`/trips/new?city_id=${c.city_id}`}
-                    className="rounded-lg bg-[#0B4F6C] px-3 py-1.5 font-bold text-white shadow-xs hover:bg-[#0E6C8F]"
-                  >
-                    + Add to Trip
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/trips/new?city_id=${c.city_id}`}
+                      className="rounded bg-[#FF5A5F] px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-[#E0484D]"
+                    >
+                      + Plan Trip
+                    </Link>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
-
-        {(cities ?? []).length === 0 ? (
-          <p className="pacific-card p-12 text-center text-sm text-slate-500">
-            No destinations found matching your query.
-          </p>
-        ) : null}
       </main>
     </div>
   );

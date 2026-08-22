@@ -12,6 +12,19 @@ import {
   updateTrip,
   cloneTripAction,
 } from "@/lib/actions/trips";
+import {
+  Calendar,
+  Lock,
+  Link as LinkIcon,
+  Globe,
+  Plus,
+  Edit3,
+  Wallet,
+  Copy,
+  Clock,
+  Pin,
+  ExternalLink,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -129,21 +142,22 @@ export default async function TripDetailPage({
                 {trip.status}
               </span>
               {currentVisibility === "public" ? (
-                <span className="rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">
-                  🌍 Public
+                <span className="rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                  <Globe className="h-3.5 w-3.5" /> Public
                 </span>
               ) : currentVisibility === "link_only" ? (
-                <span className="rounded-full bg-blue-50 px-3 py-0.5 text-xs font-bold text-blue-700 border border-blue-200">
-                  🔗 Link Only
+                <span className="rounded-full bg-blue-50 px-3 py-0.5 text-xs font-bold text-blue-700 border border-blue-200 flex items-center gap-1">
+                  <LinkIcon className="h-3.5 w-3.5" /> Link Only
                 </span>
               ) : (
-                <span className="rounded-full bg-slate-100 px-3 py-0.5 text-xs font-bold text-slate-600 border border-slate-200">
-                  🔒 Private
+                <span className="rounded-full bg-slate-100 px-3 py-0.5 text-xs font-bold text-slate-600 border border-slate-200 flex items-center gap-1">
+                  <Lock className="h-3.5 w-3.5" /> Private
                 </span>
               )}
             </div>
-            <p className="mt-1.5 text-sm text-slate-600 font-medium">
-              📅 {trip.start_date ?? "Dates TBD"} — {trip.end_date ?? "TBD"}
+            <p className="mt-1.5 text-sm text-slate-600 font-medium flex items-center gap-1.5">
+              <Calendar className="h-4 w-4 text-slate-400" />
+              <span>{trip.start_date ?? "Dates TBD"} — {trip.end_date ?? "TBD"}</span>
             </p>
             {trip.description ? <p className="mt-2 max-w-2xl text-xs text-slate-600">{trip.description}</p> : null}
           </div>
@@ -151,24 +165,27 @@ export default async function TripDetailPage({
           <div className="flex flex-wrap gap-2.5">
             <Link
               href={`/trips/${tripId}/build`}
-              className="btn-coral px-5 py-2.5 text-xs font-bold shadow-md"
+              className="btn-coral px-5 py-2.5 text-xs font-bold shadow-md flex items-center gap-1.5"
             >
-              ✎ Edit Itinerary
+              <Edit3 className="h-3.5 w-3.5" />
+              <span>Edit Itinerary</span>
             </Link>
             <Link
               href={`/trips/${tripId}/budget`}
-              className="btn-teal-outline px-4 py-2 text-xs font-semibold shadow-xs"
+              className="btn-teal-outline px-4 py-2 text-xs font-semibold shadow-xs flex items-center gap-1.5"
             >
-              💰 Budget & Expenses
+              <Wallet className="h-3.5 w-3.5" />
+              <span>Budget & Expenses</span>
             </Link>
             <form action={cloneTripAction}>
               <input type="hidden" name="source_trip_id" value={tripId} />
               <button
                 type="submit"
-                className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs"
+                className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs flex items-center gap-1.5"
                 title="Duplicate this itinerary as a template"
               >
-                📋 Clone Trip
+                <Copy className="h-3.5 w-3.5" />
+                <span>Clone Trip</span>
               </button>
             </form>
           </div>
@@ -209,8 +226,9 @@ export default async function TripDetailPage({
             {(stops ?? []).length === 0 ? (
               <div className="rounded-xl border border-dashed border-teal-900/20 bg-white p-10 text-center">
                 <p className="text-sm text-slate-600">No destination stops added yet.</p>
-                <Link href={`/trips/${tripId}/build`} className="btn-coral mt-3 inline-block px-4 py-2 text-xs font-semibold">
-                  + Add First Stop in Builder
+                <Link href={`/trips/${tripId}/build`} className="btn-coral mt-3 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold">
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add First Stop in Builder</span>
                 </Link>
               </div>
             ) : (
@@ -231,7 +249,10 @@ export default async function TripDetailPage({
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[#0891B2]">Stop {index + 1}</span>
                         <h3 className="text-xl font-extrabold text-slate-900">{city?.name ?? "City"}, {city?.country}</h3>
-                        <p className="text-xs text-slate-500 font-medium">📅 {stop.start_date} to {stop.end_date}</p>
+                        <p className="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                          <Calendar className="h-3 w-3 text-slate-400" />
+                          <span>{stop.start_date} to {stop.end_date}</span>
+                        </p>
                       </div>
                       {stop.section_budget_inr ? (
                         <div className="text-right rounded-lg bg-white px-3 py-1.5 border border-slate-200">
@@ -242,8 +263,9 @@ export default async function TripDetailPage({
                     </div>
 
                     {stop.notes ? (
-                      <p className="mx-5 mt-4 rounded-lg bg-amber-50/70 border border-amber-200 p-3 text-xs text-amber-900 italic">
-                        📌 {stop.notes}
+                      <p className="mx-5 mt-4 rounded-lg bg-amber-50/70 border border-amber-200 p-3 text-xs text-amber-900 italic flex items-center gap-1.5">
+                        <Pin className="h-3.5 w-3.5 text-amber-700 shrink-0" />
+                        <span>{stop.notes}</span>
                       </p>
                     ) : null}
 
@@ -267,7 +289,11 @@ export default async function TripDetailPage({
                                       <span className="font-bold text-slate-900 text-sm">{title}</span>
                                       <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
                                         {catalogAct?.category ? <span className="rounded bg-sky-50 text-[#0891B2] px-1.5 py-0.5 text-[10px] font-semibold">{catalogAct.category}</span> : null}
-                                        {act.scheduled_time ? <span>• ⏰ {act.scheduled_time}</span> : null}
+                                        {act.scheduled_time ? (
+                                          <span className="flex items-center gap-1">
+                                            • <Clock className="h-3 w-3" /> {act.scheduled_time}
+                                          </span>
+                                        ) : null}
                                         {catalogAct?.duration_minutes ? <span>• {catalogAct.duration_minutes} mins</span> : null}
                                       </div>
                                       {act.notes ? <p className="text-xs text-slate-500 mt-1">Note: {act.notes}</p> : null}
@@ -314,7 +340,9 @@ export default async function TripDetailPage({
                         className="mt-0.5"
                       />
                       <div>
-                        <p className="font-bold text-slate-900">🔒 Private</p>
+                        <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                          <Lock className="h-3.5 w-3.5 text-slate-600" /> Private
+                        </p>
                         <p className="text-[11px] text-slate-500 font-normal">Only you and invited collaborators can view.</p>
                       </div>
                     </label>
@@ -330,7 +358,9 @@ export default async function TripDetailPage({
                         className="mt-0.5"
                       />
                       <div>
-                        <p className="font-bold text-slate-900">🔗 Shared via Secret Link</p>
+                        <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                          <LinkIcon className="h-3.5 w-3.5 text-blue-600" /> Shared via Secret Link
+                        </p>
                         <p className="text-[11px] text-slate-500 font-normal">Anyone with the link can view & request to join.</p>
                       </div>
                     </label>
@@ -346,7 +376,9 @@ export default async function TripDetailPage({
                         className="mt-0.5"
                       />
                       <div>
-                        <p className="font-bold text-slate-900">🌍 Public</p>
+                        <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                          <Globe className="h-3.5 w-3.5 text-emerald-600" /> Public
+                        </p>
                         <p className="text-[11px] text-slate-500 font-normal">Visible to the traveler community and anyone with the link.</p>
                       </div>
                     </label>
@@ -372,9 +404,10 @@ export default async function TripDetailPage({
                       <Link
                         href={`/trips/share/${trip.share_token}`}
                         target="_blank"
-                        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1"
                       >
-                        Preview View ↗
+                        <span>Preview View</span>
+                        <ExternalLink className="h-3 w-3" />
                       </Link>
                     </div>
                   </div>
@@ -457,9 +490,10 @@ export default async function TripDetailPage({
 
                   <button
                     type="submit"
-                    className="btn-coral py-2 font-bold shadow-xs"
+                    className="btn-coral py-2 font-bold shadow-xs flex items-center justify-center gap-1.5"
                   >
-                    + Send Invitation
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Send Invitation</span>
                   </button>
                 </form>
               ) : null}

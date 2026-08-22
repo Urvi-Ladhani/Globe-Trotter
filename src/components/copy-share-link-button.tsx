@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Copy, Check } from "lucide-react";
 
 export function CopyShareLinkButton({ shareUrl }: { shareUrl: string }) {
   const [copied, setCopied] = useState(false);
@@ -29,11 +30,13 @@ export function CopyShareLinkButton({ shareUrl }: { shareUrl: string }) {
     >
       {copied ? (
         <>
-          <span>✓</span> Copied Link!
+          <Check className="h-3.5 w-3.5" />
+          <span>Copied Link!</span>
         </>
       ) : (
         <>
-          <span>📋</span> Copy Link
+          <Copy className="h-3.5 w-3.5" />
+          <span>Copy Link</span>
         </>
       )}
     </button>

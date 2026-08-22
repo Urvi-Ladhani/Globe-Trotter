@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/lib/actions/auth";
+import { Compass } from "lucide-react";
 
 export function Nav({
   profile,
@@ -28,7 +29,7 @@ export function Nav({
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-white hover:opacity-90">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF5A5F] text-white shadow-xs">
-            ✈
+            <Compass className="h-5 w-5" />
           </span>
           <span>Globe<span className="text-[#38BDF8]">Trotter</span></span>
         </Link>

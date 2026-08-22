@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireActiveUser } from "@/lib/auth";
 import { Nav } from "@/components/nav";
+import { MapPin, Compass, Calendar } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -165,10 +166,11 @@ export default async function CalendarPage({
                         <Link
                           key={s.stop_id}
                           href={`/trips/${s.trip_id}`}
-                          className="block truncate rounded bg-[#E0F2FE] px-1.5 py-0.5 text-[10px] font-bold text-[#0B4F6C] hover:bg-[#BAE6FD]"
+                          className="flex items-center gap-1 truncate rounded bg-[#E0F2FE] px-1.5 py-0.5 text-[10px] font-bold text-[#0B4F6C] hover:bg-[#BAE6FD]"
                           title={`${city?.name ?? "City"}`}
                         >
-                          📍 {city?.name ?? "Stop"}
+                          <MapPin className="h-2.5 w-2.5 shrink-0" />
+                          <span className="truncate">{city?.name ?? "Stop"}</span>
                         </Link>
                       );
                     })}
@@ -177,9 +179,10 @@ export default async function CalendarPage({
                       <Link
                         key={t.trip_id}
                         href={`/trips/${t.trip_id}`}
-                        className="block truncate rounded bg-teal-50 px-1.5 py-0.5 text-[10px] font-semibold text-[#0891B2]"
+                        className="flex items-center gap-1 truncate rounded bg-teal-50 px-1.5 py-0.5 text-[10px] font-semibold text-[#0891B2]"
                       >
-                        ✈ {t.name}
+                        <Compass className="h-2.5 w-2.5 shrink-0" />
+                        <span className="truncate">{t.name}</span>
                       </Link>
                     ))}
                   </div>
