@@ -27,7 +27,7 @@ export default async function ActivitiesPage({
   if (category) query = query.eq("category", category);
   if (search) query = query.ilike("name", `%${search}%`);
 
-  const { data: activities } = await query.order("popularity_score", { ascending: false });
+  const { data: activities } = await query.order("created_at", { ascending: false });
 
   // 2. Fetch all cities for filter dropdown and submit form
   const { data: allCities } = await supabase
@@ -128,9 +128,11 @@ export default async function ActivitiesPage({
                     <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-bold text-[#0891B2] border border-sky-200">
                       {act.category}
                     </span>
-                    <span className="rounded bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700">
-                      ★ {act.popularity_score}
-                    </span>
+                    {act.rating ? (
+                      <span className="rounded bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700">
+                        ★ {act.rating}
+                      </span>
+                    ) : null}
                   </div>
 
                   <h2 className="mt-3 text-lg font-bold text-slate-900">{act.name}</h2>

@@ -127,7 +127,7 @@ export default async function CitiesPage({
 
                     {/* Bookmark Toggle */}
                     {isSaved && savedId ? (
-                      <form action={unbookmarkCity}>
+                      <form action={removeSavedDestination}>
                         <input type="hidden" name="saved_id" value={savedId} />
                         <button
                           type="submit"
@@ -138,7 +138,7 @@ export default async function CitiesPage({
                         </button>
                       </form>
                     ) : (
-                      <form action={bookmarkCity}>
+                      <form action={saveDestination}>
                         <input type="hidden" name="city_id" value={c.city_id} />
                         <button
                           type="submit"

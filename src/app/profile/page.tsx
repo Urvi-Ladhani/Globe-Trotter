@@ -24,9 +24,9 @@ export default async function ProfilePage({
   // 2. Fetch saved destinations
   const { data: savedDestinations } = await supabase
     .from("saved_destinations")
-    .select("saved_id, city_id, created_at")
+    .select("saved_id, city_id, saved_at")
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("saved_at", { ascending: false });
 
   // 3. Fetch city details for saved destinations
   const cityIds = (savedDestinations ?? []).map((s) => s.city_id);

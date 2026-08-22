@@ -238,9 +238,11 @@ export default async function AdminPage({
                 <div key={log.log_id} className="flex items-center justify-between p-4 text-xs">
                   <div>
                     <span className="rounded bg-slate-100 px-2 py-0.5 font-bold uppercase text-slate-700 text-[10px]">
-                      {log.action_type}
+                      {log.action}
                     </span>
-                    <span className="ml-2 font-semibold text-slate-800">{log.target_type}: {log.target_id}</span>
+                    <span className="ml-2 font-semibold text-slate-800">
+                      Target: {log.target_user_id ?? "System"} {log.notes ? `(${log.notes})` : ""}
+                    </span>
                   </div>
                   <span className="text-[11px] text-slate-400 font-medium">
                     {new Date(log.created_at).toLocaleString("en-US")}
