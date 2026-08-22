@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireActiveUser } from "@/lib/auth";
 import { Nav } from "@/components/nav";
 import { deleteTrip, respondToInvite } from "@/lib/actions/trips";
+import { CopyShareLinkButton } from "@/components/copy-share-link-button";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +60,7 @@ export default async function TripsPage() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">My Trips</h1>
-            <p className="mt-1 text-sm text-slate-600">View and organize all your upcoming, ongoing, and past itineraries.</p>
+            <p className="mt-1 text-sm text-slate-600">Manage private itineraries, shared travel plans, and collaboration invitations.</p>
           </div>
           <Link
             href="/trips/new"
@@ -71,9 +72,9 @@ export default async function TripsPage() {
       </div>
 
       <main className="mx-auto w-full max-w-6xl px-4 py-8 space-y-10">
-        {/* Pending Invites */}
+        {/* Pending Invites Banner */}
         {pendingInvites.length > 0 ? (
-          <section className="rounded-xl border border-amber-300 bg-amber-50/70 p-5 shadow-xs">
+          <section className="rounded-xl border border-amber-300 bg-amber-50/80 p-5 shadow-xs">
             <h2 className="text-base font-bold text-amber-900">Trip Collaboration Invites ({pendingInvites.length})</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {pendingInvites.map((inv) => {
@@ -83,19 +84,23 @@ export default async function TripsPage() {
                     <div>
                       <h3 className="font-bold text-slate-900">{t?.name ?? "Trip Invitation"}</h3>
                       <p className="text-xs text-slate-500">
-                        {t?.start_date ?? "TBD"} – {t?.end_date ?? "TBD"} · Role: <span className="font-semibold text-slate-700 capitalize">{inv.permission}</span>
+                        📅 {t?.start_date ?? "TBD"} – {t?.end_date ?? "TBD"} · Role: <span className="font-semibold text-slate-700 capitalize">{inv.permission === "edit" ? "Can Edit" : "View Only"}</span>
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <form action={respondToInvite}>
                         <input type="hidden" name="trip_id" value={inv.trip_id} />
                         <input type="hidden" name="status" value="accepted" />
-                        <button type="submit" className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700">Accept</button>
+                        <button type="submit" className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700">
+                          Accept
+                        </button>
                       </form>
                       <form action={respondToInvite}>
                         <input type="hidden" name="trip_id" value={inv.trip_id} />
                         <input type="hidden" name="status" value="declined" />
-                        <button type="submit" className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">Decline</button>
+                        <button type="submit" className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+                          Decline
+                        </button>
                       </form>
                     </div>
                   </div>
@@ -119,53 +124,64 @@ export default async function TripsPage() {
               </div>
 
               <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {list.map((t) => (
-                  <div key={t.trip_id} className="pacific-card pacific-card-hover overflow-hidden flex flex-col justify-between">
-                    <div className="p-5">
-                      <div className="flex items-start justify-between">
-                        <h3 className="font-bold text-lg text-slate-900">{t.name}</h3>
-                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold capitalize ${
-                          s === "ongoing"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : s === "upcoming"
-                            ? "bg-sky-50 text-[#0891B2] border border-sky-200"
-                            : "bg-slate-100 text-slate-700"
-                        }`}>
-                          {t.status}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs text-slate-500 font-medium">
-                        {t.start_date ?? "Open"} – {t.end_date ?? "Open"}
-                      </p>
-                      {t.description ? (
-                        <p className="mt-2 text-xs text-slate-600 line-clamp-2">{t.description}</p>
-                      ) : null}
-                    </div>
+                {list.map((t) => {
+                  const visibility = t.is_public ? "public" : t.share_token ? "link_only" : "private";
 
-                    <div className="border-t border-slate-100 bg-slate-50/70 p-3.5 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-3">
-                        <Link href={`/trips/${t.trip_id}`} className="font-bold text-[#0891B2] hover:underline">
-                          View
-                        </Link>
-                        <Link href={`/trips/${t.trip_id}/build`} className="font-medium text-slate-700 hover:text-slate-900">
-                          Builder
-                        </Link>
-                        <Link href={`/trips/${t.trip_id}/budget`} className="font-medium text-slate-700 hover:text-slate-900">
-                          Budget
-                        </Link>
+                  return (
+                    <div key={t.trip_id} className="pacific-card pacific-card-hover overflow-hidden flex flex-col justify-between">
+                      <div className="p-5">
+                        <div className="flex items-start justify-between">
+                          <h3 className="font-bold text-lg text-slate-900">{t.name}</h3>
+                          <div className="flex items-center gap-1.5">
+                            {visibility === "public" ? (
+                              <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200" title="Public to everyone">
+                                🌍 Public
+                              </span>
+                            ) : visibility === "link_only" ? (
+                              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200" title="Accessible via secret link">
+                                🔗 Link Only
+                              </span>
+                            ) : (
+                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200" title="Private to you & collaborators">
+                                🔒 Private
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <p className="mt-1 text-xs text-slate-500 font-medium">
+                          📅 {t.start_date ?? "Dates TBD"} – {t.end_date ?? "TBD"}
+                        </p>
+                        {t.description ? (
+                          <p className="mt-2 text-xs text-slate-600 line-clamp-2">{t.description}</p>
+                        ) : null}
                       </div>
-                      <form action={deleteTrip}>
-                        <input type="hidden" name="trip_id" value={t.trip_id} />
-                        <button
-                          type="submit"
-                          className="font-medium text-red-500 hover:text-red-700 hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </form>
+
+                      <div className="border-t border-slate-100 bg-slate-50/70 p-3.5 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-3">
+                          <Link href={`/trips/${t.trip_id}`} className="font-bold text-[#0891B2] hover:underline">
+                            View
+                          </Link>
+                          <Link href={`/trips/${t.trip_id}/build`} className="font-medium text-slate-700 hover:text-slate-900">
+                            Builder
+                          </Link>
+                          <Link href={`/trips/${t.trip_id}/budget`} className="font-medium text-slate-700 hover:text-slate-900">
+                            Budget
+                          </Link>
+                        </div>
+                        <form action={deleteTrip}>
+                          <input type="hidden" name="trip_id" value={t.trip_id} />
+                          <button
+                            type="submit"
+                            className="font-medium text-red-500 hover:text-red-700 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </form>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           );
@@ -174,22 +190,25 @@ export default async function TripsPage() {
         {/* Shared Trips */}
         {(sharedTrips ?? []).length > 0 ? (
           <section>
-            <h2 className="text-lg font-bold text-slate-900">Trips Shared With Me ({sharedTrips?.length})</h2>
+            <div className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#0891B2]" />
+              <h2 className="text-lg font-bold text-slate-900">Trips Shared With Me ({sharedTrips?.length})</h2>
+            </div>
             <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {sharedTrips?.map((t) => (
                 <div key={t.trip_id} className="pacific-card pacific-card-hover overflow-hidden flex flex-col justify-between">
                   <div className="p-5">
                     <h3 className="font-bold text-lg text-slate-900">{t.name}</h3>
                     <p className="mt-1 text-xs text-slate-500">
-                      {t.start_date ?? "Open"} – {t.end_date ?? "Open"}
+                      📅 {t.start_date ?? "Open"} – {t.end_date ?? "Open"}
                     </p>
-                    <span className="mt-2 inline-block rounded bg-teal-50 px-2 py-0.5 text-xs text-[#0891B2] font-semibold border border-teal-200">
-                      Shared Trip
+                    <span className="mt-2 inline-block rounded-full bg-teal-50 px-2.5 py-0.5 text-xs text-[#0891B2] font-semibold border border-teal-200">
+                      Shared Collaborator
                     </span>
                   </div>
-                  <div className="border-t border-slate-100 bg-slate-50/70 p-3.5 flex gap-3 text-xs">
-                    <Link href={`/trips/${t.trip_id}`} className="font-bold text-[#0891B2] hover:underline">
-                      View
+                  <div className="border-t border-slate-100 bg-slate-50/70 p-3.5 flex gap-3 text-xs font-bold text-[#0891B2]">
+                    <Link href={`/trips/${t.trip_id}`} className="hover:underline">
+                      View Itinerary →
                     </Link>
                     <Link href={`/trips/${t.trip_id}/build`} className="font-medium text-slate-700 hover:text-slate-900">
                       Builder
